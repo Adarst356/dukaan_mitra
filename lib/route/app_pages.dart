@@ -1,4 +1,7 @@
+import 'package:flutter_demo/core/common_controller.dart';
 import 'package:flutter_demo/modules/auth/signup/signup_screen.dart';
+import 'package:flutter_demo/modules/dashboard/data/repo/dashboard_repo.dart';
+import 'package:flutter_demo/modules/profile/data/repo/profile_repo.dart';
 import 'package:get/get.dart';
 
 import '../modules/auth/data/auth_repo.dart';
@@ -8,6 +11,8 @@ import '../modules/auth/signup/signup_controller.dart';
 import '../modules/dashboard/dashboard_controller.dart';
 import '../modules/dashboard/dashboard_screen.dart';
 import '../modules/onboarding/onboarding_screen.dart';
+import '../modules/profile/update/update_profile_controller.dart';
+import '../modules/profile/update/update_profile_screen.dart';
 import 'app_routes.dart';
 
 /// @Created by akash on 08-12-2025.
@@ -34,6 +39,16 @@ class AppPages {
         Get.lazyPut(() => SignupController(repo: Get.find()));
       }),
     ),
+    GetPage(
+      name: AppRoutes.updateProfile,
+      page: () => UpdateProfileScreen(),
+      binding: BindingsBuilder(() {
+        Get.lazyPut(() => ProfileRepo());
+        Get.lazyPut(() => UpdateProfileController(repo: Get.find()));
+      }),
+    ),
+
+
     GetPage(
       name: AppRoutes.dashboard,
       page: () => DashboardScreen(),

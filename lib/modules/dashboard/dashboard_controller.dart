@@ -2,21 +2,19 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_demo/modules/dashboard/purchase/purchase_history.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'profile/profile_details_screen.dart';
+import '../profile/update/update_profile_screen.dart';
 
-import '../home/home_screen.dart';
-import '../profile/profile_screen.dart';
-import '../purchase/purchase_history.dart';
+import 'home/home_screen.dart';
 
 /// @Created by akash on 20-02-2026.
 /// Know more about author at https://akash.cloudemy.in
 
 class DashboardController extends GetxController{
   //final repo = DashboardRepo();
-  final fullNameController = TextEditingController();
-  final mobileNumberController = TextEditingController();
-  final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final newPasswordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
@@ -28,24 +26,11 @@ class DashboardController extends GetxController{
     'assets/images/slide_2.jpg',
   ];
   var currentIndex = 0.obs;
-  final List<Widget> pages = [HomeScreen(),PurchaseHistory(),ProfileScreen() ];
+  final List<Widget> pages = [HomeScreen(),PurchaseHistory(),ProfileDetailsScreen() ];
 
   void changeIndex(int index) {
     currentIndex.value = index;
   }
-
-  Future<void> pickImage(ImageSource source) async {
-    final XFile? image = await _picker.pickImage(
-      source: source,
-      imageQuality: 80,
-    );
-
-    if (image == null) return;
-
-    profileImage.value = File(image.path);
-  }
-  final ImagePicker _picker = ImagePicker();
-  Rx<File?> profileImage = Rx<File?>(null);
 
   @override
   void onReady() {

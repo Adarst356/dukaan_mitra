@@ -8,5 +8,6 @@ class AppRoutes {
   static const dashboard = '/dashboard';
   static const login = '/login';
   static const signupScreen = '/signupScreen';
+  static const updateProfile = '/update-profile';
 
 }

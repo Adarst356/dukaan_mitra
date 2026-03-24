@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter_demo/core/widgets/text_field_with_label.dart';
+import 'package:flutter_demo/modules/auth/data/auth_repo.dart';
 import 'package:flutter_demo/modules/auth/login/login_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -16,6 +17,9 @@ import '../../../route/app_routes.dart';
 class LoginScreen extends GetView<LoginController> {
   const LoginScreen({super.key});
 
+  @override
+  // TODO: implement controller
+  LoginController get controller => Get.put(LoginController(repo: Get.put(AuthRepo())));
   @override
   Widget build(BuildContext context) {
     return Scaffold(

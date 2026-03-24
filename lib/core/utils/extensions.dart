@@ -9,6 +9,7 @@ import 'package:get/get.dart';
 
 import '../../data/models/geo_location.dart';
 import '../network/ui_state.dart';
+import '../theme/theme_colors.dart';
 import '../widgets/sorting_button.dart';
 
 /// @Created by akash on 17-12-2025.
@@ -196,5 +197,35 @@ extension IterableX<T> on Iterable<T> {
     });
 
     return list;
+  }
+}
+
+extension StatusColorExtension on String {
+  String get _normalized => toLowerCase().trim();
+  bool get isSuccess =>
+      _normalized == 'verified' ||
+          _normalized == 'success' ||
+          _normalized == 'approved';
+
+  bool get isPending => _normalized == 'pending';
+  bool get isRejected => _normalized == 'rejected';
+  Color bgColor(ColorScheme colorScheme) {
+    if (isSuccess) {
+      return ThemeColors.colorGreen.withOpacity(0.1);
+    } else if (isPending) {
+      return Colors.orange.withOpacity(0.1);
+    } else if (isRejected) {
+      return ThemeColors.colorRed.withOpacity(0.1);
+    }
+    return colorScheme.surfaceVariant;
+  }
+  Color dotColor(ColorScheme colorScheme) {
+    if (isSuccess) return Colors.green;
+    if (isPending) return Colors.orange;
+    if (isRejected) return colorScheme.error;
+    return colorScheme.onSurfaceVariant;
+  }
+  Color textColor(ColorScheme colorScheme) {
+    return dotColor(colorScheme);
   }
 }

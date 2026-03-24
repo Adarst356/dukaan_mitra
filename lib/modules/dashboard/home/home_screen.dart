@@ -6,8 +6,10 @@ import 'package:flutter_demo/core/utils/spacing.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:get/get.dart';
 
-import '../../core/widgets/search_text_field.dart';
-import '../dashboard/dashboard_controller.dart';
+import '../../../core/widgets/search_text_field.dart';
+import '../dashboard_controller.dart';
+
+
 
 class HomeScreen extends GetView<DashboardController> {
   HomeScreen({super.key});

@@ -10,6 +10,7 @@ import '../data/document_type_response.dart';
 
 class SignupController extends GetxController {
   final AuthRepo repo;
+
   SignupController({required this.repo});
 
   final signupState = UiState<BaseRes>.none().obs;
@@ -47,6 +48,7 @@ class SignupController extends GetxController {
       orElse: () => [],
     );
   }
+
   Future<void> pickDocumentForType(int documentTypeId) async {
     final result = await FilePicker.platform.pickFiles(
       allowMultiple: false,
@@ -58,29 +60,7 @@ class SignupController extends GetxController {
       documentFiles.refresh();
     }
   }
-/*  Future<void> pickDocumentForType(int documentTypeId) async {
-    final result = await FilePicker.platform.pickFiles(
-      allowMultiple: false,
-      type: FileType.any,
-    );
 
-    if (result == null || result.paths.first == null) return;
-
-    final path = result.paths.first!;
-    final ext = path.split('.').last.toLowerCase(); // lowercase convert
-
-    if (!['jpg', 'jpeg', 'png', 'pdf'].contains(ext)) {
-      Get.snackbar(
-        "Invalid File",
-        "Only JPG, PNG or PDF allowed",
-        backgroundColor: Colors.red.shade100,
-      );
-      return;
-    }
-
-    documentFiles[documentTypeId] = path;
-    documentFiles.refresh();
-  }*/
 
   void removeDocumentForType(int documentTypeId) {
     documentFiles.remove(documentTypeId);
@@ -106,24 +86,40 @@ class SignupController extends GetxController {
     final formData = FormData({
       'FullName': fullNameController.text.trim(),
       'MobileNumber': mobileNumberController.text.trim(),
-      'Email': emailController.text.trim().isEmpty ? "" : emailController.text.trim(),
+      'Email': emailController.text.trim().isEmpty
+          ? ""
+          : emailController.text.trim(),
       'Password': passwordController.text.trim(),
       'Address': addressController.text.trim(),
       'City': cityController.text.trim(),
       'State': stateController.text.trim(),
       'Pincode': pinCodeController.text.trim(),
-      'ReferralAgentId': int.tryParse(referralAgentIdController.text.trim()) ?? 0,
+      'ReferralAgentId':
+          int.tryParse(referralAgentIdController.text.trim()) ?? 0,
     });
 
     int i = 0;
-    documentFiles.forEach((typeId, filePath) {
-      formData.files.add(MapEntry(
-        'Documents[$i].file',
-        MultipartFile(File(filePath), filename: filePath.split('/').last),
-      ));
-      formData.fields.add(MapEntry('Documents[$i].documentTypeId', '$typeId'));
+
+    for (final entry in documentFiles.entries) {
+      final filePath = entry.value;
+
+      formData.files.add(
+        MapEntry(
+          'Documents[$i].file',
+          MultipartFile(
+            File(filePath).readAsBytesSync(),
+            filename: filePath.split('/').last,
+          ),
+        ),
+      );
+
+      formData.fields.add(
+        MapEntry('Documents[$i].documentTypeId', '${entry.key}'),
+      );
+
       i++;
-    });
+    }
+
     print("----- FORM DATA FIELDS -----");
     formData.fields.forEach((field) {
       print("${field.key} : ${field.value}");
@@ -136,16 +132,10 @@ class SignupController extends GetxController {
 
     repo.customerSignup(formData, (state) {
       signupState.value = state;
-      state.handleWithErrorBox(
-        showLoader: false,
-            (data) async {
-              showSuccessToast("Signup Successful");
-          Get.back();
-        },
-      );
-    }
-    );
+      state.handleWithErrorBox(showLoader: false, (data) async {
+        showSuccessToast("Signup Successful");
+        Get.back();
+      });
+    });
   }
-
-
 }

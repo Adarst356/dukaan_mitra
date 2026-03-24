@@ -3,8 +3,9 @@ import 'package:flutter_demo/core/utils/extensions.dart';
 import 'package:flutter_demo/modules/dashboard/dashboard_controller.dart';
 import 'package:get/get.dart';
 
-import '../../core/utils/spacing.dart';
-import '../../core/widgets/rounded_button.dart';
+import '../../../core/utils/spacing.dart';
+import '../../../core/widgets/rounded_button.dart';
+
 
 class PurchaseHistory extends GetView<DashboardController> {
   const PurchaseHistory({super.key});

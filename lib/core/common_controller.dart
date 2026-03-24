@@ -10,7 +10,6 @@ class CommonController extends GetxController {
   static CommonController get to => Get.find();
 
   final repo = CommonRepo();
-
   final Rx<UserData?> userData = Rx<UserData?>(null);
   final loggedIn = false.obs;
 
@@ -54,4 +53,7 @@ class CommonController extends GetxController {
       Get.offAllNamed(AppRoutes.login);
     }
   }
+
+
+
 }

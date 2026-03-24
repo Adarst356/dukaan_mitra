@@ -9,6 +9,7 @@ import 'package:get/get.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/utils/printer.dart';
 import '../../data/models/user_data.dart';
+import '../../modules/profile/data/model/user_profile_model.dart';
 import '../common_controller.dart';
 import '../utils/common_methods.dart';
 import 'api_response_handler.dart';
@@ -70,8 +71,17 @@ class ApiClient extends GetConnect with Printer {
           .toList(),
     );
   }
+
   Future<BaseRes> logout() async {
     final response = await post('Auth/logout', {});
     return ApiResponseHandler.parseBaseRes(response);
+  }
+
+  Future<BaseDataRes<UserProfileModel>> getUserProfile() async {
+    final response = await get('Customer/my-profile');
+    return ApiResponseHandler.parse<UserProfileModel>(
+      response,
+          (json) => UserProfileModel.fromJson(json as Map<String, dynamic>),
+    );
   }
 }

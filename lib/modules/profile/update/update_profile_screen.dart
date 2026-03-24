@@ -1,21 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_demo/core/theme/theme_colors.dart';
+import 'package:flutter_demo/core/network/ui_state.dart';
 import 'package:flutter_demo/core/utils/spacing.dart';
-import 'package:flutter_demo/route/app_routes.dart';
+import 'package:flutter_demo/core/widgets/error_text_widget.dart';
+import 'package:flutter_demo/core/widgets/loader.dart';
+import 'package:flutter_demo/modules/profile/update/update_profile_controller.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../../core/utils/extensions.dart';
+import '../../../core/widgets/rounded_button.dart';
+import '../../../core/widgets/text_field_with_label.dart';
+import '../../dashboard/dashboard_controller.dart';
 
-import '../../core/common_controller.dart';
-import '../../core/utils/extensions.dart';
-import '../../core/widgets/custom_dialog.dart';
-import '../../core/widgets/icon_text_button.dart';
-import '../../core/widgets/rounded_button.dart';
-import '../../core/widgets/text_field_with_label.dart';
-import '../dashboard/dashboard_controller.dart';
-
-class ProfileScreen extends GetView<DashboardController> {
-  const ProfileScreen({super.key});
+class UpdateProfileScreen extends GetView<UpdateProfileController> {
+  const UpdateProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +36,6 @@ class ProfileScreen extends GetView<DashboardController> {
                                 as ImageProvider,
                     );
                   }),
-
                   Positioned(
                     bottom: 4,
                     right: 4,
@@ -63,7 +60,6 @@ class ProfileScreen extends GetView<DashboardController> {
               ),
             ),
             Spacing.h32,
-
             _SectionLabel(label: 'Full Name'),
             TextFieldWithLabel(
               controller: controller.fullNameController,
@@ -118,171 +114,57 @@ class ProfileScreen extends GetView<DashboardController> {
                 color: context.colorScheme.primaryContainer,
               ),
             ),
-            Spacing.h8,
 
-            _SectionLabel(label: 'Password'),
-            PassWordTextFormFieldWithLabel(
-              controller: controller.passwordController,
-              hint: "Enter Your Password",
-              autofillHints: const [AutofillHints.newPassword],
-              textInputFormatter: [LengthLimitingTextInputFormatter(16)],
-              validator: (value) => (value?.length ?? 0) < 6
-                  ? "Password must be at least 6 characters"
-                  : null,
-            ),
-
-            Align(
-              alignment: Alignment.centerRight,
-              child: Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: TextButton(
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (_) => passwordDialog(context),
-                    );
-                  },
-                  child: Text(
-                    "Change Password",
-                    style: TextStyle(
-                      color: context.colorScheme.error,
-                      decoration: TextDecoration.underline,
-                      decorationColor: context.colorScheme.error,
-                    ),
-                  ),
-                ),
-              ),
-            ),
+            Spacing.h12,
+            _SectionLabel(label: 'Uploaded Documents'),
             Spacing.h8,
+            Obx(() {
+
+              final state = controller.profileState.value;
+              return state.when(
+                success: (data) {
+                  final docs = data.documents ?? [];
+                  return ListView.separated(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    itemCount: docs.length,
+                    separatorBuilder: (_, _) => Spacing.h12,
+                    itemBuilder: (context, index) {
+                      final doc = docs[index];
+                      return _DocCard(
+                        name: doc.documentName ?? '',
+                        status: doc.verificationStatus ?? 'Pending',
+                        filePath: doc.filePath,
+                        uploadedDate: doc.uploadedDate,
+                      );
+                    },
+                  );
+                },
+                loading: () => Center(child: Loader()),
+                error: (error) => ErrorTextWidget(msg: error),
+                none: () => const SizedBox(),
+              );
+            }),
+
+            Spacing.h12,
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: SizedBox(
                 height: 50,
                 child: RoundedButton(
                   text: "Save",
-                  width: double.infinity,radius: 10,
-                    backgroundColor: context.colorScheme.primary,
+                  width: double.infinity,
+                  radius: 10,
+                  backgroundColor: context.colorScheme.primary,
                   foregroundColor: context.colorScheme.surface,
                   onPressed: () {
-                  //  controller.updateProfile();
-                  }
+                    //  controller.updateProfile();
+                  },
                 ),
               ),
             ),
-            Spacing.h16,
-            IconTextButton(
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (_) => CustomDialog(
-                    title: 'Sure you want to Log-out ?',
-                    icon: Icons.block,
-                    iconColor:ThemeColors.colorRed,
-                    primaryBtnText: 'Yes',
-                    onPrimaryPressed: (){
-                      CommonController.to.logout();
-                      Get.back();
-                    },
-                    onCancelPressed: () {
-                      Get.back();
-                    }
-                  )
-                );
-              },
-              label: "Logout",
-              icon: Icons.logout,
-              color: context.colorScheme.primary,
-            ),
-            Spacing.h32,
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget passwordDialog(BuildContext context) {
-    return Dialog(
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16)
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Change password',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-            ),
-            Spacing.h16,
-
-            PassWordTextFormFieldWithLabel(
-              controller: controller.newPasswordController,
-              hint: "Enter New Password",
-              autofillHints: const [AutofillHints.newPassword],
-              textInputFormatter: [LengthLimitingTextInputFormatter(16)],
-              validator: (value) =>
-                  (value?.length ?? 0) < 6 ? "Minimum 6 characters" : null,
-            ),
-            Spacing.h12,
-
-            PassWordTextFormFieldWithLabel(
-              controller: controller.confirmPasswordController,
-              hint: "Re-enter New Password",
-              autofillHints: const [AutofillHints.newPassword],
-              textInputFormatter: [LengthLimitingTextInputFormatter(16)],
-              validator: (value) {
-                if ((value?.length ?? 0) < 6) {
-                  return "Minimum 6 characters";
-                }
-                if (value != controller.newPasswordController.text) {
-                  return "Passwords do not match";
-                }
-                return null;
-              },
-            ),
-            Spacing.h16,
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Expanded(
-                  child: RoundedButton(
-                    radius: 10,
-                    onPressed: () {
-                      Get.back();
-                    },
-                    text: "Cancel",
-                    backgroundColor: context.colorScheme.surfaceContainerHighest,
-                    foregroundColor: context.colorScheme.onSurface,
-                  ),
-                ),
-                Spacing.w8,
-                Expanded(
-                  child: RoundedButton(
-                    radius: 10,
-                    onPressed: () {
-                      showDialog(
-                          context: context,
-                          builder: (_) => CustomDialog(
-                            title: 'Password Changed Successfully!',
-                            icon: Icons.check_circle_outline,
-                            iconColor: ThemeColors.colorGreen,
-                            primaryBtnText: 'OK',
-                            onPrimaryPressed: () {
-                              Get.back();
-                            },
-                          )
-                      );
-                    },
-                    text: "Done",
-                    backgroundColor: context.colorScheme.primary,
-                    foregroundColor: context.colorScheme.onPrimary,
-                  ),
-                ),
-              ],
-            )
+            Spacing.h80,
           ],
         ),
       ),
@@ -448,6 +330,170 @@ class _SectionLabel extends StatelessWidget {
           textAlign: TextAlign.start,
           style: context.textStyle.bodyMedium,
         ),
+      ),
+    );
+  }
+}
+
+class _DocCard extends StatelessWidget {
+  final String name;
+  final String status;
+  final String? filePath;
+  final String? uploadedDate;
+
+  const _DocCard({
+    required this.name,
+    required this.status,
+    this.filePath,
+    this.uploadedDate,
+  });
+
+  String _formatDate(String? dateStr) {
+    if (dateStr == null) return '';
+    try {
+      final dt = DateTime.parse(dateStr);
+      return '${dt.day.toString().padLeft(2, '0')}/'
+          '${dt.month.toString().padLeft(2, '0')}/'
+          '${dt.year}  ${dt.hour.toString().padLeft(2, '0')}:'
+          '${dt.minute.toString().padLeft(2, '0')}';
+    } catch (_) {
+      return '';
+    }
+  }
+  bool get _isImage {
+    if (filePath == null) return false;
+    final lower = filePath!.toLowerCase();
+    return lower.endsWith('.jpg') ||
+        lower.endsWith('.jpeg') ||
+        lower.endsWith('.png') ||
+        lower.endsWith('.webp');
+  }
+  IconData get _fileIcon {
+    if (filePath == null) return Icons.insert_drive_file_outlined;
+    final lower = filePath!.toLowerCase();
+    if (lower.endsWith('.pdf')) return Icons.picture_as_pdf_outlined;
+    if (lower.endsWith('.doc') || lower.endsWith('.docx')) return Icons.description_outlined;
+    if (lower.endsWith('.zip') || lower.endsWith('.rar')) return Icons.folder_zip_outlined;
+    return Icons.insert_drive_file_outlined;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = context.colorScheme;
+    final bgColor = status.bgColor(colorScheme);
+    final dotColor = status.dotColor(colorScheme);
+    final textColor = status.textColor(colorScheme);
+    final formattedDate = _formatDate(uploadedDate);
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: colorScheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: colorScheme.outlineVariant),
+      ),
+      child: Row(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: Container(
+              width: 56,
+              height: 56,
+              color: colorScheme.surfaceVariant,
+              child: _isImage && filePath != null
+                  ? Image.network(
+                filePath!,
+                fit: BoxFit.cover,
+                loadingBuilder: (context, child, progress) {
+                  if (progress == null) return child;
+                  return const Center(
+                    child: SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: Loader(),
+                    ),
+                  );
+                },
+                errorBuilder: (_, _, _) => Icon(
+                  Icons.broken_image_outlined,
+                  color: colorScheme.onSurfaceVariant,
+                  size: 24,
+                ),
+              )
+                  : Icon(
+                _fileIcon,
+                color: colorScheme.onSurfaceVariant,
+                size: 24,
+              ),
+            ),
+          ),
+
+       Spacing.w12,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  name,
+                  style: context.textStyle.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                Spacing.h4,
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 9,
+                    vertical: 3,
+                  ),
+                  decoration: BoxDecoration(
+                    color: bgColor,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: 6,
+                        height: 6,
+                        decoration: BoxDecoration(
+                          color: dotColor,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      Spacing.w4,
+                      Text(
+                        status,
+                        style:  context.textStyle.labelSmall?.copyWith(
+                          color: textColor,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                if (formattedDate.isNotEmpty) ...[
+                  Spacing.h4,
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.calendar_today_outlined,
+                        size: 12,
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                      Spacing.w4,
+                      Text(
+                        formattedDate,
+                        style:  context.textStyle.bodySmall?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
