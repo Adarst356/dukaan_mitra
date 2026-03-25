@@ -1,26 +1,21 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_demo/core/network/ui_state.dart';
 import 'package:flutter_demo/core/theme/theme_colors.dart';
 import 'package:flutter_demo/core/utils/extensions.dart';
 import 'package:flutter_demo/core/utils/spacing.dart';
+import 'package:flutter_demo/core/widgets/error_text_widget.dart';
+import 'package:flutter_demo/core/widgets/loader.dart';
+import 'package:flutter_demo/modules/dashboard/data/models/product_response.dart';
+import 'package:flutter_demo/route/app_routes.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:get/get.dart';
 
 import '../../../core/widgets/search_text_field.dart';
 import '../dashboard_controller.dart';
 
-
-
 class HomeScreen extends GetView<DashboardController> {
-  HomeScreen({super.key});
-
-  final categories = [
-    (label: 'Phones', icon: Icons.smartphone, color: Colors.blue),
-    (label: 'Audio', icon: Icons.headphones, color: Colors.purple),
-    (label: 'Cases', icon: Icons.phone_android, color: Colors.green),
-    (label: 'Storage', icon: Icons.memory, color: Colors.red),
-    (label: 'Other', icon: Icons.more_horiz, color: Colors.orange),
-  ];
+  const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +23,7 @@ class HomeScreen extends GetView<DashboardController> {
       appBar: AppBar(
         backgroundColor: ThemeColors.bottomNavigationColor,
         elevation: 0,
-        toolbarHeight: 190,
+        toolbarHeight: 140,
         flexibleSpace: Column(
           children: [
             Padding(
@@ -53,29 +48,6 @@ class HomeScreen extends GetView<DashboardController> {
               hint: "Search any Product..",
               onChanged: (value) {},
             ),
-
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'All Featured',
-                    style: context.textStyle.titleMedium?.copyWith(
-                      color: context.colorScheme.surface,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  Row(
-                    children: [
-                      _actionButton(context, icon: Icons.sort, label: 'Sort'),
-                      const SizedBox(width: 8),
-                      _actionButton(context, icon: Icons.tune, label: 'Filter'),
-                    ],
-                  ),
-                ],
-              ),
-            ),
           ],
         ),
       ),
@@ -87,22 +59,31 @@ class HomeScreen extends GetView<DashboardController> {
               padding: const EdgeInsets.symmetric(vertical: 16),
               child: SizedBox(
                 height: 90,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  itemCount: categories.length,
-                  separatorBuilder: (_, _) => Spacing.w12,
-                  itemBuilder: (context, index) {
-                    final item = categories[index];
-                    return circleIconItem(
-                      context,
-                      icon: item.icon,
-                      label: item.label,
-                      iconColor: item.color,
-                      onTap: () {},
-                    );
-                  },
-                ),
+                child: Obx(() {
+                  return controller.categoryState.value.when(
+                    success: (data) {
+                      return ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        itemCount: data.length,
+                        separatorBuilder: (_, _) => Spacing.w12,
+                        itemBuilder: (context, index) {
+                          final item = data[index];
+                          return circleIconItem(
+                            context,
+                            icon: Icons.category,
+                            label: item.categoryName ?? "",
+                            iconColor: Colors.blue,
+                            onTap: () {},
+                          );
+                        },
+                      );
+                    },
+                    error: (error) => ErrorTextWidget(msg: error),
+                    loading: () => Loader(),
+                    none: () => SizedBox(),
+                  );
+                }),
               ),
             ),
 
@@ -113,52 +94,6 @@ class HomeScreen extends GetView<DashboardController> {
                 style: context.textStyle.titleMedium,
               ),
             ),
-
-            /*  Column(
-              children: [
-                SizedBox(
-                  height: 200,
-                  child: PageView.builder(
-                    itemCount: controller.promoImages.length,
-                    onPageChanged: (index) => controller.currentPage.value = index,
-                    itemBuilder: (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: Image.asset(
-                            controller.promoImages[index],
-                            fit: BoxFit.cover,
-                            width: double.infinity,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 10),
-                  child: Obx(() => Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(
-                      controller.promoImages.length,
-                          (index) => AnimatedContainer(
-                        duration: const Duration(milliseconds: 300),
-                        margin: const EdgeInsets.symmetric(horizontal: 4),
-                        width: controller.currentPage.value == index ? 20 : 8,
-                        height: 8,
-                        decoration: BoxDecoration(
-                          color: controller.currentPage.value == index
-                              ? Theme.of(context).colorScheme.primary
-                              : Colors.grey.shade400,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                      ),
-                    ),
-                  )),
-                ),
-              ],
-            ),*/
             Column(
               children: [
                 CarouselSlider(
@@ -212,62 +147,68 @@ class HomeScreen extends GetView<DashboardController> {
                 ),
               ],
             ),
-            Spacing.h32,
+            Spacing.h16,
+
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 28),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 16,
-                      horizontal: 18,
+                  Text(
+                    'All Featured',
+                    style: context.textStyle.titleMedium?.copyWith(
+                      color: context.colorScheme.secondary,
+                      fontWeight: FontWeight.w600,
                     ),
-                    decoration: BoxDecoration(
-                      color: context.colorScheme.surfaceContainer,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        width: 1,
-                        color: context.colorScheme.onSurface,
+                  ),
+                  Row(
+                    children: [
+                      _actionButton(
+                        context,
+                        icon: Icons.sort,
+                        label: 'Sort',
+                        onTap: () {
+                          sortBottomSheet(context);
+                        },
                       ),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          "View all Promotion",
-                          style: context.textStyle.bodySmall?.copyWith(
-                            color: context.colorScheme.onSurface,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        Spacing.w4,
-                        Icon(
-                          Icons.arrow_forward_ios,
-                          color: context.colorScheme.onSurface,
-                          size: 16,
-                        ),
-                      ],
-                    ),
+                      const SizedBox(width: 8),
+                      _actionButton(
+                        context,
+                        icon: Icons.tune,
+                        label: 'Filter',
+                        onTap: () {Get.toNamed(AppRoutes.filterScreen);},
+                      ),
+                    ],
                   ),
                 ],
               ),
             ),
             Spacing.h32,
-            MasonryGridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              gridDelegate: const SliverSimpleGridDelegateWithMaxCrossAxisExtent(
-                maxCrossAxisExtent: 220,
-              ),
-              mainAxisSpacing: 10,
-              crossAxisSpacing: 10,
-              itemCount: 5,
-              itemBuilder: (context, index) {
-                return _buildStaticCard(context);
-              },
-            )
+            Obx(() {
+              return controller.productState.value.when(
+                success: (product) {
+                  return MasonryGridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    gridDelegate:
+                        const SliverSimpleGridDelegateWithMaxCrossAxisExtent(
+                          maxCrossAxisExtent: 220,
+                        ),
+                    mainAxisSpacing: 10,
+                    crossAxisSpacing: 10,
+                    itemCount: product.length,
+                    itemBuilder: (context, index) {
+                      final item = product[index];
+                      return _buildStaticCard(context, item);
+                    },
+                  );
+                },
+                error: (error) => ErrorTextWidget(msg: error),
+                loading: () => Loader(),
+                none: () => SizedBox(),
+              );
+            }),
           ],
         ),
       ),
@@ -278,25 +219,30 @@ class HomeScreen extends GetView<DashboardController> {
     BuildContext context, {
     required IconData icon,
     required String label,
+    required VoidCallback? onTap,
   }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: context.colorScheme.surfaceContainer,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, color: context.colorScheme.onSurface, size: 16),
-          const SizedBox(width: 4),
-          Text(
-            label,
-            style: context.textStyle.bodySmall?.copyWith(
-              color: context.colorScheme.onSurface,
-              fontWeight: FontWeight.w500,
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: context.colorScheme.surfaceContainer,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: context.colorScheme.onSurface, size: 16),
+            const SizedBox(width: 4),
+            Text(
+              label,
+              style: context.textStyle.bodySmall?.copyWith(
+                color: context.colorScheme.onSurface,
+                fontWeight: FontWeight.w500,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -331,7 +277,7 @@ class HomeScreen extends GetView<DashboardController> {
     );
   }
 
-  Widget _buildStaticCard(BuildContext context) {
+  Widget _buildStaticCard(BuildContext context, ProductResponse item) {
     return Container(
       decoration: BoxDecoration(
         color: context.colorScheme.surface,
@@ -351,8 +297,8 @@ class HomeScreen extends GetView<DashboardController> {
               borderRadius: BorderRadius.circular(14),
               child: AspectRatio(
                 aspectRatio: 1,
-                child: Image.asset(
-                  "assets/images/handsome.jpg",
+                child: Image.network(
+                  item.images![0].imagePath!,
                   fit: BoxFit.cover,
                 ),
               ),
@@ -364,19 +310,20 @@ class HomeScreen extends GetView<DashboardController> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Product Name Example",
+                  item.title ?? "",
+                  softWrap: true,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: context.textStyle.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                Spacing.h4,
+                Spacing.h8,
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      "Category",
+                      item.brandName ?? "",
                       style: context.textStyle.bodySmall?.copyWith(
                         color: context.colorScheme.onSurfaceVariant,
                       ),
@@ -388,19 +335,108 @@ class HomeScreen extends GetView<DashboardController> {
                     ),
                   ],
                 ),
+                Spacing.h8,
+                Text(
+                  "₹ ${item.mrp ?? 0}",
+                  style: context.textStyle.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
                 Spacing.h4,
-               Text(
-                 "Rs 14000",style: context.textStyle.bodyMedium?.copyWith(
-                   fontWeight: FontWeight.w600,
-                 ),
-               ),
-                Spacing.h4
-
-
               ],
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  void sortBottomSheet(BuildContext context) {
+    RxInt selectedSort = 0.obs;
+    Get.bottomSheet(
+      SafeArea(
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: context.colorScheme.surface,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 12),
+                  decoration: BoxDecoration(
+                    color: context.colorScheme.outlineVariant,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
+
+              Text(
+                "SORT BY",
+                style: context.textStyle.labelMedium?.copyWith(
+                  fontWeight: FontWeight.w800,
+                  color: context.colorScheme.onSurfaceVariant,
+                ),
+              ),
+
+              Divider(height: 1, color: context.colorScheme.outlineVariant),
+              Spacing.h16,
+              Column(
+                children: [
+                  _sortOption(context, "Popularity", 0, selectedSort),
+                  _sortOption(context, "Price — Low to High", 1, selectedSort),
+                  _sortOption(context, "Price — High to Low", 2, selectedSort),
+                  _sortOption(context, "Newest First", 3, selectedSort),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+      isScrollControlled: true,
+    );
+  }
+
+  Widget _sortOption(
+    BuildContext context,
+    String title,
+    int index,
+    RxInt selectedSort,
+  ) {
+    return Obx(
+      () => InkWell(
+        onTap: () {
+          selectedSort.value = index;
+          Get.back(result: index);
+        },
+        borderRadius: BorderRadius.circular(8),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              title,
+              style: context.textStyle.bodyMedium?.copyWith(
+                color: context.colorScheme.onSurface,
+              ),
+            ),
+
+            Radio<int>(
+              value: index,
+              groupValue: selectedSort.value,
+              activeColor: context.colorScheme.primary,
+              onChanged: (value) {
+                selectedSort.value = value!;
+                Get.back(result: value);
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

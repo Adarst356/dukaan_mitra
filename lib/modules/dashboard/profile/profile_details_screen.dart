@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_demo/core/network/ui_state.dart';
 import 'package:flutter_demo/core/utils/extensions.dart';
 import 'package:flutter_demo/core/utils/spacing.dart';
+import 'package:flutter_demo/core/widgets/error_text_widget.dart';
+import 'package:flutter_demo/core/widgets/loader.dart';
 import 'package:flutter_demo/modules/dashboard/dashboard_controller.dart';
 import 'package:flutter_demo/route/app_routes.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import '../../../core/common_controller.dart';
 import '../../../core/theme/theme_colors.dart';
 import '../../../core/widgets/custom_dialog.dart';
@@ -51,25 +55,34 @@ class ProfileDetailsScreen extends GetView<DashboardController> {
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          Column(
-            children: [
-              Center(
-                child: CircleAvatar(
-                  radius: 36,
-                  backgroundColor: context.colorScheme.surfaceContainerHighest,
-                  child: Icon(
-                    Icons.person,
-                    size: 36,
-                    color: context.colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ),
-              Spacing.h8,
-              Text('Name', style: context.textStyle.titleMedium),
-              Text('fos@gmail.com', style: context.textStyle.bodySmall),
-              Text('Mobile Number', style: context.textStyle.bodySmall),
-            ],
-          ),
+       Obx((){
+         return CommonController.to.profileState.value.when(
+           success: (data){
+             return Column(
+               children: [
+                 Center(
+                   child: CircleAvatar(
+                     radius: 36,
+                     backgroundColor: context.colorScheme.surfaceContainerHighest,
+                     child: Icon(
+                       Icons.person,
+                       size: 36,
+                       color: context.colorScheme.onSurfaceVariant,
+                     ),
+                   ),
+                 ),
+                 Spacing.h8,
+                 Text(data.fullName??"", style: context.textStyle.titleMedium),
+                 Text(data.email??"", style: context.textStyle.bodySmall),
+                 Text(data.mobileNumber??"", style: context.textStyle.bodySmall),
+               ],
+             );
+           },
+           error: (error)=>ErrorTextWidget(msg: error),
+           loading: ()=>Loader(),
+           none: ()=>SizedBox()
+       );
+       }),
           Positioned(
             top: 0,
             right: 0,

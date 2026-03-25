@@ -17,6 +17,7 @@ class SignupController extends GetxController {
   final documentTypeState = UiState<List<DocumentTypeResponse>>.none().obs;
 
   final formKey = GlobalKey<FormState>();
+  final isLoading = false.obs;
 
   final fullNameController = TextEditingController();
   final mobileNumberController = TextEditingController();
@@ -132,7 +133,8 @@ class SignupController extends GetxController {
 
     repo.customerSignup(formData, (state) {
       signupState.value = state;
-      state.handleWithErrorBox(showLoader: false, (data) async {
+      state.handleWithErrorBox(
+          showLoader: false, (data) async {
         showSuccessToast("Signup Successful");
         Get.back();
       });

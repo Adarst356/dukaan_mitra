@@ -9,5 +9,6 @@ class AppRoutes {
   static const login = '/login';
   static const signupScreen = '/signupScreen';
   static const updateProfile = '/update-profile';
+  static const filterScreen = '/FilterScreen';
 
 }

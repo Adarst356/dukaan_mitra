@@ -32,7 +32,7 @@ class _FloatingNavBarState extends State<FloatingNavBar> {
     final colorScheme = Theme.of(context).colorScheme;
     return Container(
       margin: const EdgeInsets.all(16),
-      height: 68,
+      height: 61,
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
         color: ThemeColors.bottomNavigationColor,
@@ -51,7 +51,7 @@ class _FloatingNavBarState extends State<FloatingNavBar> {
               },
               borderRadius: BorderRadius.circular(32),
               child: SizedBox(
-                width: 55,
+                width: 80,
                 child: AnimatedSwitcher(
                   duration: const Duration(milliseconds: 250),
                   transitionBuilder: (child, animation) {
@@ -74,7 +74,7 @@ class _FloatingNavBarState extends State<FloatingNavBar> {
                           child: Icon(
                             _filledIcon(icons[index]),
                             color: colorScheme.surface,
-                            size: 28,
+                            size: 24,
                           ),
                         )
                       : Padding(

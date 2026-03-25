@@ -3,6 +3,7 @@ import 'package:flutter_demo/core/utils/common_methods.dart';
 import 'package:get/get.dart';
 import '../data/models/user_data.dart';
 import '../data/repositories/common_repo.dart';
+import '../modules/profile/data/model/user_profile_model.dart';
 import '../route/app_routes.dart';
 import 'managers/storage_manager.dart';
 
@@ -11,6 +12,7 @@ class CommonController extends GetxController {
 
   final repo = CommonRepo();
   final Rx<UserData?> userData = Rx<UserData?>(null);
+  final profileState = UiState<UserProfileModel>.none().obs;
   final loggedIn = false.obs;
 
   @override
@@ -54,6 +56,13 @@ class CommonController extends GetxController {
     }
   }
 
-
+  void fetchProfile() {
+    repo.getUserProfile((state) {
+      profileState.value = state;
+      state.handleWithErrorBox(
+          showLoader: false, (data) async {
+      });
+    });
+  }
 
 }

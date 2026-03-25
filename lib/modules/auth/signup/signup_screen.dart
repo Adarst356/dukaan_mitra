@@ -245,6 +245,7 @@ class SignupScreen extends GetView<SignupController> {
                       foregroundColor: context.colorScheme.surface,
                       text: "Sign Up",
                       width: double.infinity,
+                      isLoading: controller.isLoading.value,
                       onPressed: controller.signup,
                     ),
                   ),

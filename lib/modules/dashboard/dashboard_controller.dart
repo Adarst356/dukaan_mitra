@@ -2,9 +2,14 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_demo/core/common_controller.dart';
+import 'package:flutter_demo/modules/dashboard/data/models/product_response.dart';
 import 'package:flutter_demo/modules/dashboard/purchase/purchase_history.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../core/network/ui_state.dart';
+import 'data/models/product_category_res.dart';
+import 'data/repo/dashboard_repo.dart';
 import 'profile/profile_details_screen.dart';
 import '../profile/update/update_profile_screen.dart';
 
@@ -14,11 +19,15 @@ import 'home/home_screen.dart';
 /// Know more about author at https://akash.cloudemy.in
 
 class DashboardController extends GetxController{
-  //final repo = DashboardRepo();
+  final repo = DashboardRepo();
   final passwordController = TextEditingController();
   final newPasswordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
   final searchController = TextEditingController();
+  final productState = UiState<List<ProductResponse>>.none().obs;
+  final categoryState = UiState<List<ProductCategoryRes>>.none().obs;
+
+
 
   final RxInt currentPage = 0.obs;
   final List<String> promoImages = [
@@ -35,9 +44,27 @@ class DashboardController extends GetxController{
   @override
   void onReady() {
     super.onReady();
+    CommonController.to.fetchProfile();
+    fetchProducts();
+    fetchCategory();
   }
 
-
+  void fetchProducts() {
+    repo.getProducts((state) {
+      productState.value = state;
+      state.handleWithErrorBox(
+          showLoader: true, (data) {}
+      );
+    });
+    }
+    void fetchCategory() {
+    repo.getCategory((state) {
+      categoryState.value = state;
+      state.handleWithErrorBox(
+          showLoader: true, (data) {}
+      );
+    });
+    }
 
   @override
   void onClose() {

@@ -3,6 +3,8 @@
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_demo/modules/auth/data/document_type_response.dart';
+import 'package:flutter_demo/modules/dashboard/data/models/product_category_res.dart';
+import 'package:flutter_demo/modules/dashboard/data/models/product_response.dart';
 import 'package:get/get.dart';
 
 
@@ -82,6 +84,24 @@ class ApiClient extends GetConnect with Printer {
     return ApiResponseHandler.parse<UserProfileModel>(
       response,
           (json) => UserProfileModel.fromJson(json as Map<String, dynamic>),
+    );
+  }
+  Future<BaseDataRes<List<ProductResponse>>> getProducts() async {
+    final response = await get('Product');
+    return ApiResponseHandler.parse<List<ProductResponse>>(
+      response,
+          (json) => (json as List<dynamic>)
+          .map((e) => ProductResponse.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+  }
+  Future<BaseDataRes<List<ProductCategoryRes>>> getCategories() async {
+    final response = await get('Category');
+    return ApiResponseHandler.parse<List<ProductCategoryRes>>(
+      response,
+          (json) => (json as List<dynamic>)
+          .map((e) => ProductCategoryRes.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
   }
 }

@@ -10,6 +10,7 @@ import '../modules/auth/login/login_screen.dart';
 import '../modules/auth/signup/signup_controller.dart';
 import '../modules/dashboard/dashboard_controller.dart';
 import '../modules/dashboard/dashboard_screen.dart';
+import '../modules/dashboard/home/filter_screen.dart';
 import '../modules/onboarding/onboarding_screen.dart';
 import '../modules/profile/update/update_profile_controller.dart';
 import '../modules/profile/update/update_profile_screen.dart';
@@ -47,7 +48,14 @@ class AppPages {
         Get.lazyPut(() => UpdateProfileController(repo: Get.find()));
       }),
     ),
-
+    GetPage(
+      name: AppRoutes.filterScreen,
+      page: () => FilterScreen(),
+      /*binding: BindingsBuilder(() {
+        Get.lazyPut(() => ProfileRepo());
+        Get.lazyPut(() => UpdateProfileController(repo: Get.find()));
+      }),*/
+    ),
 
     GetPage(
       name: AppRoutes.dashboard,
