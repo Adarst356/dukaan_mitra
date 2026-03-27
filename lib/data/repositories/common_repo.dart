@@ -4,6 +4,8 @@ import '../../core/managers/network_manager.dart';
 import '../../core/network/api_client.dart';
 import '../../core/network/base_res.dart';
 import '../../core/network/ui_state.dart';
+import '../../modules/dashboard/data/models/brand_response.dart';
+import '../../modules/dashboard/data/models/product_category_res.dart';
 import '../../modules/profile/data/model/user_profile_model.dart';
 
 /// @Created by akash on 26-09-2025.
@@ -60,6 +62,38 @@ class CommonRepo {
 
     final res = await ApiClient.to.getUserProfile();
 
+    if (res.success == true && res.data != null) {
+      callback(UiState.success(res.data!));
+    } else {
+      callback(UiState.error(res.message ?? 'Error occurred'));
+    }
+  }
+  Future<void> getCategory(
+      void Function(UiState<List<ProductCategoryRes>>) callback,
+      ) async {
+    callback(const UiState.loading());
+
+    if (!await isNetworkAvailable()) {
+      callback(const UiState.error('No internet connection'));
+      return;
+    }
+    final res = await ApiClient.to.getCategories();
+    if (res.success == true && res.data != null) {
+      callback(UiState.success(res.data!));
+    } else {
+      callback(UiState.error(res.message ?? 'Error occurred'));
+    }
+  }
+  Future<void> getBrand(
+      void Function(UiState<List<BrandResponse>>) callback,
+      ) async {
+    callback(const UiState.loading());
+
+    if (!await isNetworkAvailable()) {
+      callback(const UiState.error('No internet connection'));
+      return;
+    }
+    final res = await ApiClient.to.getBrand();
     if (res.success == true && res.data != null) {
       callback(UiState.success(res.data!));
     } else {

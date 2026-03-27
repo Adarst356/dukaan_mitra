@@ -10,5 +10,6 @@ class AppRoutes {
   static const signupScreen = '/signupScreen';
   static const updateProfile = '/update-profile';
   static const filterScreen = '/FilterScreen';
+  static const productDetailsScreen = '/productDetailsScreen';
 
 }

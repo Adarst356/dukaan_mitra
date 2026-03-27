@@ -6,6 +6,7 @@ import 'package:flutter_demo/modules/auth/data/document_type_response.dart';
 import 'package:flutter_demo/modules/dashboard/data/models/brand_response.dart';
 import 'package:flutter_demo/modules/dashboard/data/models/product_category_res.dart';
 import 'package:flutter_demo/modules/dashboard/data/models/product_response.dart';
+import 'package:flutter_demo/modules/product/data/model/product_detail_model.dart';
 import 'package:get/get.dart';
 
 
@@ -109,6 +110,15 @@ class ApiClient extends GetConnect with Printer {
           .toList(),
     );
   }
+
+  Future<BaseDataRes<ProductDetailModel>> getProductDetails(int productId) async {
+    final response = await get('Product/$productId');
+    return ApiResponseHandler.parse<ProductDetailModel>(
+      response,
+          (json) => ProductDetailModel.fromJson(json as Map<String, dynamic>),
+    );
+  }
+
   Future<BaseDataRes<List<BrandResponse>>> getBrand() async {
     final response = await get('Brand');
     return ApiResponseHandler.parse<List<BrandResponse>>(
@@ -128,4 +138,10 @@ class ApiClient extends GetConnect with Printer {
           .toList(),
     );
   }
+
+  Future<BaseRes> purchaseApply(Object body) async {
+    final response = await post('purchase/apply', body);
+    return ApiResponseHandler.parseBaseRes(response);
+  }
+
 }

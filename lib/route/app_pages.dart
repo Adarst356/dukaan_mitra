@@ -1,6 +1,9 @@
 import 'package:flutter_demo/core/common_controller.dart';
 import 'package:flutter_demo/modules/auth/signup/signup_screen.dart';
 import 'package:flutter_demo/modules/dashboard/data/repo/dashboard_repo.dart';
+import 'package:flutter_demo/modules/product/data/repo/product_detail_repo.dart';
+import 'package:flutter_demo/modules/product/details/product_details_controller.dart';
+import 'package:flutter_demo/modules/product/details/product_details_screen.dart';
 import 'package:flutter_demo/modules/profile/data/repo/profile_repo.dart';
 import 'package:get/get.dart';
 
@@ -50,12 +53,22 @@ class AppPages {
         Get.lazyPut(() => UpdateProfileController(repo: Get.find()));
       }),
     ),
+
     GetPage(
       name: AppRoutes.filterScreen,
       page: () => FilterScreen(),
       binding: BindingsBuilder(() {
         Get.lazyPut(() => FilterRepo());
         Get.lazyPut(() => FilterController(repo: Get.find()));
+      }),
+    ),
+
+    GetPage(
+      name: AppRoutes.productDetailsScreen,
+      page: () => ProductDetailsScreen(),
+      binding: BindingsBuilder(() {
+        Get.lazyPut(() => ProductDetailsRepo());
+        Get.lazyPut(() => ProductDetailsController(repo: Get.find()));
       }),
     ),
 

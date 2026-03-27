@@ -46,212 +46,249 @@ class HomeScreen extends GetView<DashboardController> {
             SearchTextField(
               controller: controller.searchController,
               hint: "Search any Product..",
-              onChanged: (value) {},
+              onChanged: (value) {
+                controller.searchProducts(value ?? '');
+              },
             ),
           ],
         ),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              child: SizedBox(
-                height: 90,
-                child: Obx(() {
-                  return controller.categoryState.value.when(
-                    success: (data) {
-                      return ListView.separated(
-                        scrollDirection: Axis.horizontal,
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        itemCount: data.length,
-                        separatorBuilder: (_, _) => Spacing.w12,
-                        itemBuilder: (context, index) {
-                          final item = data[index];
-                          return circleIconItem(
-                            context,
-                            icon: Icons.category,
-                            label: item.categoryName ?? "",
-                            iconColor: Colors.blue,
-                            onTap: () {},
-                          );
-                        },
-                      );
-                    },
-                    error: (error) => ErrorTextWidget(msg: error),
-                    loading: () => Loader(),
-                    none: () => SizedBox(),
-                  );
-                }),
-              ),
-            ),
-
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Text(
-                "Latest Promotion",
-                style: context.textStyle.titleMedium,
-              ),
-            ),
-            Column(
-              children: [
-                CarouselSlider(
-                  items: controller.promoImages.map((image) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: Image.asset(
-                          image,
-                          fit: BoxFit.cover,
-                          width: double.infinity,
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                  options: CarouselOptions(
-                    height: 200,
-                    viewportFraction: 0.9,
-                    enlargeCenterPage: true,
-                    autoPlay: true,
-                    autoPlayInterval: const Duration(seconds: 3),
-                    autoPlayAnimationDuration: const Duration(
-                      milliseconds: 800,
-                    ),
-                    onPageChanged: (index, reason) {
-                      controller.currentPage.value = index;
-                    },
-                  ),
-                ),
-                Spacing.h8,
-                Obx(
-                  () => Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(
-                      controller.promoImages.length,
-                      (index) => AnimatedContainer(
-                        duration: const Duration(milliseconds: 300),
-                        margin: const EdgeInsets.symmetric(horizontal: 4),
-                        width: controller.currentPage.value == index ? 20 : 8,
-                        height: 8,
-                        decoration: BoxDecoration(
-                          color: controller.currentPage.value == index
-                              ? context.colorScheme.primary
-                              : Colors.grey.shade400,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            Spacing.h16,
-
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'All Featured',
-                    style: context.textStyle.titleMedium?.copyWith(
-                      color: context.colorScheme.secondary,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  Row(
+      body: Obx(() {
+        return controller.productState.value.when(
+          success: (list) {
+            return RefreshIndicator(
+              onRefresh: () async {
+                controller.fetchProducts();
+              },
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: SafeArea(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _actionButton(
-                        context,
-                        icon: Icons.sort,
-                        label: 'Sort',
-                        onTap: () {
-                          sortBottomSheet(context);
-                        },
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        child: SizedBox(
+                          height: 90,
+                          child: Obx(() {
+                            return controller.categoryState.value.when(
+                              success: (data) {
+                                return ListView.separated(
+                                  scrollDirection: Axis.horizontal,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                  ),
+                                  itemCount: data.length,
+                                  separatorBuilder: (_, _) => Spacing.w12,
+                                  itemBuilder: (context, index) {
+                                    final item = data[index];
+                                    return circleIconItem(
+                                      context,
+                                      icon: Icons.category,
+                                      label: item.categoryName ?? "",
+                                      iconColor: Colors.blue,
+                                      onTap: () {},
+                                    );
+                                  },
+                                );
+                              },
+                              error: (error) => ErrorTextWidget(msg: error),
+                              loading: () => Loader(),
+                              none: () => SizedBox(),
+                            );
+                          }),
+                        ),
                       ),
-                      const SizedBox(width: 8),
-                      _actionButton(
-                        context,
-                        icon: Icons.tune,
-                        label: 'Filter',
-                        onTap: () {
-                          Get.toNamed(AppRoutes.filterScreen)?.then((result) {
-                            if (result != null) {
-                              controller.fetchFilteredProducts(
-                                categoryId: result["categoryId"],
-                                brandId: result["brandId"],
-                                minPrice: result["minPrice"],
-                                maxPrice: result["maxPrice"],
+
+                      Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Text(
+                          "Latest Promotion",
+                          style: context.textStyle.titleMedium,
+                        ),
+                      ),
+                      Column(
+                        children: [
+                          CarouselSlider(
+                            items: controller.promoImages.map((image) {
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: Image.asset(
+                                    image,
+                                    fit: BoxFit.cover,
+                                    width: double.infinity,
+                                  ),
+                                ),
                               );
-                            }
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            Spacing.h32,
-            Obx(() {
-              return controller.productState.value.when(
-                success: (product) {
-                  if (product.isEmpty) {
-                    return Center(
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 80),
-                        child: Column(
-                          children: [
-                            Icon(
-                              Icons.search_off,
-                              size: 60,
-                              color: Colors.grey,
-                            ),
-                            Spacing.h12,
-                            Text(
-                              "No products found",
-                              style: context.textStyle.titleMedium,
-                            ),
-                            Spacing.h4,
-                            Text(
-                              "Try changing filters",
-                              style: context.textStyle.bodySmall?.copyWith(
-                                color: Colors.grey,
+                            }).toList(),
+                            options: CarouselOptions(
+                              height: 200,
+                              viewportFraction: 0.9,
+                              enlargeCenterPage: true,
+                              autoPlay: true,
+                              autoPlayInterval: const Duration(seconds: 3),
+                              autoPlayAnimationDuration: const Duration(
+                                milliseconds: 800,
                               ),
+                              onPageChanged: (index, reason) {
+                                controller.currentPage.value = index;
+                              },
+                            ),
+                          ),
+                          Spacing.h8,
+                          Obx(
+                            () => Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: List.generate(
+                                controller.promoImages.length,
+                                (index) => AnimatedContainer(
+                                  duration: const Duration(milliseconds: 300),
+                                  margin: const EdgeInsets.symmetric(
+                                    horizontal: 4,
+                                  ),
+                                  width: controller.currentPage.value == index
+                                      ? 20
+                                      : 8,
+                                  height: 8,
+                                  decoration: BoxDecoration(
+                                    color: controller.currentPage.value == index
+                                        ? context.colorScheme.primary
+                                        : Colors.grey.shade400,
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Spacing.h16,
+
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'All Featured',
+                              style: context.textStyle.titleMedium?.copyWith(
+                                color: context.colorScheme.secondary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            Row(
+                              children: [
+                                _actionButton(
+                                  context,
+                                  icon: Icons.sort,
+                                  label: 'Sort',
+                                  onTap: () {
+                                    sortBottomSheet(context);
+                                  },
+                                ),
+                                const SizedBox(width: 8),
+                                _actionButton(
+                                  context,
+                                  icon: Icons.tune,
+                                  label: 'Filter',
+                                  onTap: () {
+                                    Get.toNamed(AppRoutes.filterScreen)?.then((
+                                      result,
+                                    ) {
+                                      if (result != null) {
+                                        controller.fetchFilteredProducts(
+                                          categoryId: result["categoryId"],
+                                          brandId: result["brandId"],
+                                          minPrice: result["minPrice"],
+                                          maxPrice: result["maxPrice"],
+                                        );
+                                      }
+                                    });
+                                  },
+                                ),
+                              ],
                             ),
                           ],
                         ),
                       ),
-                    );
-                  }
+                      Spacing.h12,
+                      Obx(() {
+                        return controller.productState.value.when(
+                          success: (product) {
+                            if (product.isEmpty) {
+                              return Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 24,
+                                  ),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Image.asset(
+                                        "assets/images/empty_box.png",
+                                        height: 140,
+                                      ),
+                                      Text(
+                                        "No Products Found",
+                                        style: context.textStyle.titleLarge
+                                            ?.copyWith(
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                      ),
 
-                  return MasonryGridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    gridDelegate:
-                        const SliverSimpleGridDelegateWithMaxCrossAxisExtent(
-                          maxCrossAxisExtent: 220,
-                        ),
-                    mainAxisSpacing: 10,
-                    crossAxisSpacing: 10,
-                    itemCount: product.length,
-                    itemBuilder: (context, index) {
-                      final item = product[index];
-                      return _buildStaticCard(context, item);
-                    },
-                  );
-                },
-                error: (error) => ErrorTextWidget(msg: error),
-                loading: () => Loader(),
-                none: () => SizedBox(),
-              );
-            }),
-          ],
-        ),
-      ),
+                                      /*   Spacing.h4,
+                              Text(
+                                "We couldn't find any items.\nTry adjusting your filters.",
+                                textAlign: TextAlign.center,
+                                style: context.textStyle.bodyMedium?.copyWith(
+                                  color: Colors.grey,
+                                ),
+                              ),*/
+                                    ],
+                                  ),
+                                ),
+                              );
+                            }
+
+                            return MasonryGridView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                              ),
+                              gridDelegate:
+                                  const SliverSimpleGridDelegateWithMaxCrossAxisExtent(
+                                    maxCrossAxisExtent: 220,
+                                  ),
+                              mainAxisSpacing: 10,
+                              crossAxisSpacing: 10,
+                              itemCount: product.length,
+                              itemBuilder: (context, index) {
+                                final item = product[index];
+                                return _buildStaticCard(context, item);
+                              },
+                            );
+                          },
+                          error: (error) => ErrorTextWidget(msg: error),
+                          loading: () => Loader(),
+                          none: () => SizedBox(),
+                        );
+                      }),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+          error: (error) => ErrorTextWidget(msg: error),
+          loading: () => Loader(),
+          none: () => SizedBox(),
+        );
+      }),
     );
   }
 
@@ -318,86 +355,90 @@ class HomeScreen extends GetView<DashboardController> {
   }
 
   Widget _buildStaticCard(BuildContext context, ProductResponse item) {
-    return Container(
-      decoration: BoxDecoration(
-        color: context.colorScheme.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: context.colorScheme.outlineVariant),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            margin: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: context.colorScheme.surfaceContainerHighest,
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(14),
-              child: AspectRatio(
-                aspectRatio: 1,
-                child: Image.network(
-                  item.images?.isNotEmpty == true
-                      ? item.images![0].imagePath ?? ''
-                      : '',
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return /*Image.asset(
-                      "assets/images/dunka.png",
-                      fit: BoxFit.cover,
-                    );*/
-                    Icon(Icons.broken_image_rounded,
-                      size: 50,
-                    );
-                  },
+    return InkWell(
+      onTap: () {
+        Get.toNamed(
+          AppRoutes.productDetailsScreen,
+          arguments: {'productId': item.productId},
+        );
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: context.colorScheme.surface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: context.colorScheme.outlineVariant),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              margin: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(14),
+                child: AspectRatio(
+                  aspectRatio: 1,
+                  child: Image.network(
+                    item.images?.isNotEmpty == true
+                        ? item.images![0].imagePath ?? ''
+                        : '',
+                    fit: BoxFit.contain,
+                    errorBuilder: (context, error, stackTrace) {
+                      return /*Image.asset(
+                        "assets/images/dunka.png",
+                        fit: BoxFit.cover,
+                      );*/ Image.asset("assets/images/Image_not_available.png");
+                    },
+                  ),
                 ),
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  item.title ?? "",
-                  softWrap: true,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: context.textStyle.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    item.title ?? "",
+                    softWrap: true,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: context.textStyle.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
-                ),
-                Spacing.h8,
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      item.brandName ?? "",
-                      style: context.textStyle.bodySmall?.copyWith(
-                        color: context.colorScheme.onSurfaceVariant,
+                  Spacing.h8,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        item.brandName ?? "",
+                        style: context.textStyle.bodySmall?.copyWith(
+                          color: context.colorScheme.onSurfaceVariant,
+                        ),
                       ),
-                    ),
-                    Icon(
-                      Icons.shopping_cart_outlined,
-                      size: 18,
-                      color: context.colorScheme.onSurface,
-                    ),
-                  ],
-                ),
-                Spacing.h8,
-                Text(
-                  "₹ ${item.mrp ?? 0}",
-                  style: context.textStyle.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
+                      Icon(
+                        Icons.shopping_cart_outlined,
+                        size: 18,
+                        color: context.colorScheme.onSurface,
+                      ),
+                    ],
                   ),
-                ),
-                Spacing.h4,
-              ],
+                  Spacing.h8,
+                  Text(
+                    "₹ ${item.mrp ?? 0}",
+                    style: context.textStyle.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  Spacing.h4,
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

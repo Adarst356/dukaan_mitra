@@ -4,7 +4,6 @@ import 'package:flutter_demo/modules/auth/data/auth_repo.dart';
 import 'package:flutter_demo/modules/auth/login/login_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import '../../../core/utils/extensions.dart';
 import '../../../core/utils/spacing.dart';
@@ -19,13 +18,15 @@ class LoginScreen extends GetView<LoginController> {
 
   @override
   // TODO: implement controller
-  LoginController get controller => Get.put(LoginController(repo: Get.put(AuthRepo())));
+  LoginController get controller =>
+      Get.put(LoginController(repo: Get.put(AuthRepo())));
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
-       /*   SvgPicture.asset(
+          /*   SvgPicture.asset(
             'assets/svg/circle_scatter_haikei.svg',
             color: context.colorScheme.primaryContainer.withOpacityX(.1),
             fit: BoxFit.cover,
@@ -109,13 +110,15 @@ class LoginScreen extends GetView<LoginController> {
                   Row(
                     children: [
                       Spacing.w8,
-                      Obx(() => Checkbox(
-                        value: controller.rememberMe.value,
-                        onChanged: controller.toggleRemember,
-                      )),
+                      Obx(
+                        () => Checkbox(
+                          value: controller.rememberMe.value,
+                          onChanged: controller.toggleRemember,
+                        ),
+                      ),
                       Text("Remember me", style: context.textStyle.bodyMedium),
                       Spacer(),
-                     /* TextButton(
+                      /* TextButton(
                         onPressed: () {},
                         child: Text("Forgot Password?"),
                       ),*/

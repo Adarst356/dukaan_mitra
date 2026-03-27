@@ -4,6 +4,8 @@ import 'package:flutter_demo/core/utils/extensions.dart';
 import 'package:get/get.dart';
 import '../data/models/user_data.dart';
 import '../data/repositories/common_repo.dart';
+import '../modules/dashboard/data/models/brand_response.dart';
+import '../modules/dashboard/data/models/product_category_res.dart';
 import '../modules/profile/data/model/user_profile_model.dart';
 import '../route/app_routes.dart';
 import 'managers/storage_manager.dart';
@@ -14,6 +16,8 @@ class CommonController extends GetxController {
   final repo = CommonRepo();
   final Rx<UserData?> userData = Rx<UserData?>(null);
   final profileState = UiState<UserProfileModel>.none().obs;
+  final categoryState = UiState<List<ProductCategoryRes>>.none().obs;
+  final brandState = UiState<List<BrandResponse>>.none().obs;
   final loggedIn = false.obs;
 
   @override
@@ -58,15 +62,36 @@ class CommonController extends GetxController {
   }
 
   Future<void> fetchProfile({bool isRefresh = false}) async {
-    if (isRefresh ||
-        profileState.value.isError ||
-        profileState.value.isNone) {
+    if (isRefresh || profileState.value.isError || profileState.value.isNone) {
       await repo.getUserProfile((state) {
         profileState.value = state;
         state.handleWithErrorBox(
           showLoader: false,
               (data) {
           },
+        );
+      });
+    }
+  }
+  Future<void> fetchCategory({bool isRefresh = false}) async {
+    if (isRefresh || categoryState.value.isNone || categoryState.value.isError) {
+      await repo.getCategory((state) {
+        categoryState.value = state;
+        state.handleWithErrorBox(
+          showLoader: false,
+              (data) {},
+        );
+      });
+    }
+  }
+
+  Future<void> fetchBrand({bool isRefresh = false}) async {
+    if (isRefresh || brandState.value.isNone || brandState.value.isError) {
+      await repo.getBrand((state) {
+        brandState.value = state;
+        state.handleWithErrorBox(
+          showLoader: false,
+              (data) {},
         );
       });
     }

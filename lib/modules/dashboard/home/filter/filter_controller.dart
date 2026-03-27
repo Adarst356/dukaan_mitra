@@ -1,6 +1,7 @@
 import 'package:flutter_demo/modules/dashboard/home/filter/data/filter_repo.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+import '../../../../core/common_controller.dart';
 import '../../../../core/network/ui_state.dart';
 import '../../data/models/brand_response.dart';
 import '../../data/models/product_category_res.dart';
@@ -8,8 +9,8 @@ import '../../data/models/product_category_res.dart';
 class FilterController extends GetxController {
   final FilterRepo repo;
   FilterController({required this.repo});
-  final categoryState = UiState<List<ProductCategoryRes>>.none().obs;
-  final brandState = UiState<List<BrandResponse>>.none().obs;
+/*  final categoryState = UiState<List<ProductCategoryRes>>.none().obs;
+  final brandState = UiState<List<BrandResponse>>.none().obs;*/
   var selectedCategoryId = RxnInt();
   var selectedBrandId = RxnInt();
   var isLoading = true.obs;
@@ -21,24 +22,20 @@ class FilterController extends GetxController {
 @override
 void onReady() {
     super.onReady();
-    fetchCategory();
-    fetchBrand();
+   /* fetchCategory();
+    fetchBrand();*/
+    CommonController.to.fetchCategory();
+    CommonController.to.fetchBrand();
   }
 
   void toggleCategory(int id) {
-    if (selectedCategoryId.value == id) {
-      selectedCategoryId.value = null;
-    } else {
-      selectedCategoryId.value = id;
-    }
+    selectedCategoryId.value =
+    selectedCategoryId.value == id ? null : id;
   }
 
   void toggleBrand(int id) {
-    if (selectedBrandId.value == id) {
-      selectedBrandId.value = null;
-    } else {
-      selectedBrandId.value = id;
-    }
+    selectedBrandId.value =
+    selectedBrandId.value == id ? null : id;
   }
 
 
@@ -60,7 +57,7 @@ void onReady() {
     }
   }
 
-  void fetchCategory() {
+/*  void fetchCategory() {
     repo.getCategory((state) {
       categoryState.value = state;
       state.handleWithErrorBox(
@@ -76,5 +73,5 @@ void onReady() {
           showLoader: true, (data) {}
       );
     });
-  }
+  }*/
 }

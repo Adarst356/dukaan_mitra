@@ -1,17 +1,12 @@
-import 'dart:async';
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_demo/core/common_controller.dart';
 import 'package:flutter_demo/modules/dashboard/data/models/product_response.dart';
 import 'package:flutter_demo/modules/dashboard/purchase/purchase_history.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
 import '../../core/network/ui_state.dart';
 import 'data/models/product_category_res.dart';
 import 'data/repo/dashboard_repo.dart';
 import 'profile/profile_details_screen.dart';
-import '../profile/update/update_profile_screen.dart';
 
 import 'home/home_screen.dart';
 
@@ -83,8 +78,24 @@ class DashboardController extends GetxController{
     );
   }
 
+  void searchProducts(String query) {
+    if (query.isEmpty) {
+      fetchProducts();
+    } else {
+      repo.getProducts(
+        (state) {
+          productState.value = state;
+        },
+        search: query,
+      );
+    }
+  }
+
   @override
   void onClose() {
+    passwordController.dispose();
+    newPasswordController.dispose();
+    confirmPasswordController.dispose();
     super.onClose();
   }
 }

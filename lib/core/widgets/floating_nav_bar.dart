@@ -32,65 +32,60 @@ class _FloatingNavBarState extends State<FloatingNavBar> {
     final colorScheme = Theme.of(context).colorScheme;
     return Container(
       margin: const EdgeInsets.all(16),
-      height: 61,
+      height: 60,
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
         color: ThemeColors.bottomNavigationColor,
         borderRadius: BorderRadius.circular(32),
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: List.generate(icons.length, (index) {
-          final isSelected = index == widget.selectedIndex;
-          return Padding(
-            padding: EdgeInsets.only(left: index == 0 ? 0 : 16.0),
-            child: InkWell(
-              onTap: () {
-                widget.onTap(index);
-              },
-              borderRadius: BorderRadius.circular(32),
-              child: SizedBox(
-                width: 80,
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 250),
-                  transitionBuilder: (child, animation) {
-                    return ScaleTransition(
-                      scale: CurvedAnimation(
-                        parent: animation,
-                        curve: Curves.easeOutBack,
-                      ),
-                      child: child,
-                    );
-                  },
-                  child: isSelected
-                      ? Container(
-                          key: const ValueKey('filled'),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: colorScheme.onSurfaceVariant,
-                          ),
-                          padding: const EdgeInsets.all(12),
-                          child: Icon(
-                            _filledIcon(icons[index]),
-                            color: colorScheme.surface,
-                            size: 24,
-                          ),
-                        )
-                      : Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                          child: Icon(
-                            icons[index],
-                            key: const ValueKey('outlined'),
-                            color: colorScheme.onSurfaceVariant,
-                          ),
-                        ),
+      child:  Row(
+      mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: List.generate(icons.length, (index) {
+        final isSelected = index == widget.selectedIndex;
+        return Expanded(
+          child: InkWell(
+            onTap: () {
+              widget.onTap(index);
+            },
+            borderRadius: BorderRadius.circular(32),
+            child: Center(
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 250),
+                transitionBuilder: (child, animation) {
+                  return ScaleTransition(
+                    scale: CurvedAnimation(
+                      parent: animation,
+                      curve: Curves.easeOutBack,
+                    ),
+                    child: child,
+                  );
+                },
+                child: isSelected
+                    ? Container(
+                  key: const ValueKey('filled'),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                  padding: const EdgeInsets.all(12),
+                  child: Icon(
+                    _filledIcon(icons[index]),
+                    color: colorScheme.surface,
+                    size: 20,
+                  ),
+                )
+                    : Icon(
+                  icons[index],
+                  key: const ValueKey('outlined'),
+                  color: colorScheme.surface,
                 ),
               ),
             ),
-          );
-        }),
-      ),
+          ),
+        );
+      }),
+    ),
     );
   }
 

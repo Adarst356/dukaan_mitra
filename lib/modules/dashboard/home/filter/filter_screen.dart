@@ -7,6 +7,7 @@ import 'package:flutter_demo/core/widgets/error_text_widget.dart';
 import 'package:flutter_demo/core/widgets/loader.dart';
 import 'package:get/get.dart';
 
+import '../../../../core/common_controller.dart';
 import 'filter_controller.dart';
 
 class FilterScreen extends GetView<FilterController> {
@@ -30,86 +31,37 @@ class FilterScreen extends GetView<FilterController> {
             color: context.colorScheme.onSurface,
           ),
         ),
-
       ),
 
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            categorySection(context),
-            divider(),
-            priceSection(context),
-            divider(),
-            brandSection(context),
-            SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: OutlinedButton(
-                        onPressed: controller.resetFilters,
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          side: BorderSide(color: context.colorScheme.primary),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        child: Text(
-                          'Reset',
-                          style: context.textStyle.bodyMedium?.copyWith(
-                            color: context.colorScheme.primary,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Spacing.w16,
-                    Expanded(
-                      flex: 2,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Get.back(
-                              result: {
-                            "categoryId": controller.selectedCategoryId.value,
-                            "brandId": controller.selectedBrandId.value,
-                            "minPrice": controller.priceRange.value.start,
-                            "maxPrice": controller.priceRange.value.end,
-                          });
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: ThemeColors.bottomNavigationColor,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        child: Text(
-                          'Show Results',
-                          style: context.textStyle.bodyMedium?.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-          ],
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await Future.wait([
+            CommonController.to.fetchCategory(isRefresh: true),
+            CommonController.to.fetchBrand(isRefresh: true),
+          ]);
+        },
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              categorySection(context),
+              divider(),
+              priceSection(context),
+              divider(),
+              brandSection(context),
+            ],
+          ),
         ),
       ),
+      bottomNavigationBar: _buildFilterBottomBar(context),
     );
   }
 
   Widget categorySection(BuildContext context) {
     return Obx(() {
-      return controller.categoryState.value.when(
+      return CommonController.to.categoryState.value.when(
         success: (data) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -127,13 +79,13 @@ class FilterScreen extends GetView<FilterController> {
 
                 return Row(
                   children: [
-                    Obx(
-                      () => Checkbox(
-                        value: controller.selectedCategoryId.value == item.categoryId,
-                        onChanged: (_) {
-                          controller.toggleCategory(item.categoryId!);
-                        },
-                      ),
+                    Checkbox(
+                      value:
+                          controller.selectedCategoryId.value ==
+                          item.categoryId,
+                      onChanged: (_) {
+                        controller.toggleCategory(item.categoryId!);
+                      },
                     ),
                     Spacing.w8,
                     Text(item.categoryName ?? ""),
@@ -180,26 +132,23 @@ class FilterScreen extends GetView<FilterController> {
 
   Widget brandSection(BuildContext context) {
     return Obx(() {
-      return controller.brandState.value.when(
+      return CommonController.to.brandState.value.when(
         success: (brand) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text('Brand', style: context.textStyle.titleMedium),
               Spacing.h8,
-
               ...List.generate(brand.length, (index) {
                 final item = brand[index];
 
                 return Row(
                   children: [
-                    Obx(
-                      () => Checkbox(
-                        value: controller.selectedBrandId.value == item.brandId,
-                        onChanged: (_) {
-                          controller.toggleBrand(item.brandId!);
-                        },
-                      ),
+                    Checkbox(
+                      value: controller.selectedBrandId.value == item.brandId,
+                      onChanged: (_) {
+                        controller.toggleBrand(item.brandId!);
+                      },
                     ),
                     Spacing.w8,
                     Text(item.brandName ?? ""),
@@ -215,7 +164,66 @@ class FilterScreen extends GetView<FilterController> {
       );
     });
   }
-
+  Widget _buildFilterBottomBar(BuildContext context) {
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Row(
+          children: [
+            Expanded(
+              child: OutlinedButton(
+                onPressed: controller.resetFilters,
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  side: BorderSide(color: context.colorScheme.primary),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: Text(
+                  'Reset',
+                  style: context.textStyle.bodyMedium?.copyWith(
+                    color: context.colorScheme.primary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
+            Spacing.w16,
+            Expanded(
+              flex: 2,
+              child: ElevatedButton(
+                onPressed: () {
+                  Get.back(
+                    result: {
+                      "categoryId": controller.selectedCategoryId.value,
+                      "brandId": controller.selectedBrandId.value,
+                      "minPrice": controller.priceRange.value.start,
+                      "maxPrice": controller.priceRange.value.end,
+                    },
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: ThemeColors.bottomNavigationColor,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: Text(
+                  'Show Results',
+                  style: context.textStyle.bodyMedium?.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
   Widget divider() {
     return const Padding(
       padding: EdgeInsets.symmetric(vertical: 20),

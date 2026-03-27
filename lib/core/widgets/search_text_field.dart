@@ -3,9 +3,6 @@ import 'package:get/get.dart';
 import 'package:flutter_demo/core/utils/extensions.dart';
 import 'package:flutter_demo/core/widgets/text_field_with_label.dart';
 
-/// @Created by akash on 29-12-2025.
-/// Know more about author at https://akash.cloudemy.in
-
 class SearchTextField extends StatelessWidget {
   const SearchTextField({
     super.key,
@@ -52,10 +49,8 @@ class SearchTextField extends StatelessWidget {
             : IconButton(
                 onPressed: () {
                   controller.clear();
-                  controller.text = '';
-                  isEmpty.value = controller.text.isEmpty;
+                  isEmpty.value = true;
                   onChanged?.call('');
-                  onSubmitted?.call('');
                 },
                 icon: Icon(
                   Icons.close,
