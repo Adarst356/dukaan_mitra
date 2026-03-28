@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_demo/core/theme/theme_colors.dart';
 import 'package:flutter_demo/core/utils/extensions.dart';
-import 'package:flutter_demo/modules/dashboard/dashboard_controller.dart';
 import 'package:get/get.dart';
 
 import '../../../core/utils/spacing.dart';
 import '../../../core/widgets/rounded_button.dart';
-
+import '../dashboard_controller.dart';
 
 class PurchaseHistory extends GetView<DashboardController> {
   const PurchaseHistory({super.key});
@@ -14,27 +14,29 @@ class PurchaseHistory extends GetView<DashboardController> {
     {
       'name': 'Apple iPhone 16 Pro Max \n 256GB',
       'price': 'Rs.389,900.00',
+      'status': 'DELIVERED',
       'image': 'https://m.media-amazon.com/images/I/61bK6PMOC3L._AC_SX200_.jpg',
     },
     {
       'name': 'Apple AirPods Max 2024',
       'price': 'Rs.199,900.00',
+      'status': 'DELIVERED',
       'image': 'https://m.media-amazon.com/images/I/81xSSqfBFML._AC_SX200_.jpg',
     },
     {
       'name': 'Apple Mac Mini M2 Chip \n 8GB RAM 256GB',
       'price': 'Rs.189,900.00',
+      'status': 'DELIVERED',
       'image': 'https://m.media-amazon.com/images/I/61a2y2WCUGL._AC_SX200_.jpg',
     },
+  ];
+
+  static const List<Map<String, String>> pendingItems = [
     {
       'name': 'Spigen Galaxy Z Flip \n 4 Air Skin Case Glitter',
       'price': 'Rs.18,900.00',
+      'status': 'PENDING',
       'image': 'https://m.media-amazon.com/images/I/71Q4j4z4+ML._AC_SX200_.jpg',
-    },
-    {
-      'name': 'Spigen Ultra Hybrid 14 \n Pro Max Case',
-      'price': 'Rs.14,900.00',
-      'image': 'https://m.media-amazon.com/images/I/61c1ZUKQWLL._AC_SX200_.jpg',
     },
   ];
 
@@ -42,20 +44,15 @@ class PurchaseHistory extends GetView<DashboardController> {
     {
       'name': 'Samsung Galaxy A55 Tempered Glass',
       'price': 'Rs.1,500.00',
-      'image':
-          'https://m.media-amazon.com/images/I/51bCa8FEJMLL._AC_SX200_.jpg',
-    },
-    {
-      'name': 'Spigen Ultra Hybrid 14 Pro Max Case',
-      'price': 'Rs.14,900.00',
-      'image': 'https://m.media-amazon.com/images/I/61c1ZUKQWLL._AC_SX200_.jpg',
+      'status': 'CANCELLED',
+      'image': 'https://m.media-amazon.com/images/I/51bCa8FEJMLL._AC_SX200_.jpg',
     },
   ];
 
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 2,
+      length: 3,
       child: Scaffold(
         backgroundColor: context.colorScheme.surfaceContainerLow,
         appBar: AppBar(
@@ -76,15 +73,28 @@ class PurchaseHistory extends GetView<DashboardController> {
             ),
             tabs: const [
               Tab(text: 'Completed'),
+              Tab(text: 'Pending'),
               Tab(text: 'Canceled'),
             ],
           ),
         ),
-
         body: TabBarView(
           children: [
-            _buildList(items: completedItems, isCanceled: false),
-            _buildList(items: canceledItems, isCanceled: true),
+            _buildList(
+              context: context,
+              items: completedItems,
+              type: PurchaseType.completed,
+            ),
+            _buildList(
+              context: context,
+              items: pendingItems,
+              type: PurchaseType.pending,
+            ),
+            _buildList(
+              context: context,
+              items: canceledItems,
+              type: PurchaseType.canceled,
+            ),
           ],
         ),
       ),
@@ -92,44 +102,38 @@ class PurchaseHistory extends GetView<DashboardController> {
   }
 
   Widget _buildList({
+    required BuildContext context,
     required List<Map<String, String>> items,
-    required bool isCanceled,
+    required PurchaseType type,
   }) {
     return ListView.builder(
-      padding:  EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       itemCount: items.length,
       itemBuilder: (context, index) {
-        final Map<String, String> item = items[index];
-        return PurchaseCard(
+        final item = items[index];
+        return purchaseCard(
+          context: context,
           name: item['name'] ?? '',
           price: item['price'] ?? '',
           imageUrl: item['image'] ?? '',
-          isCanceled: isCanceled,
+          status: item['status'] ?? '',
+          type: type,
         );
       },
     );
   }
-}
 
-class PurchaseCard extends StatelessWidget {
-  final String name;
-  final String price;
-  final String imageUrl;
-  final bool isCanceled;
-
-  const PurchaseCard({
-    super.key,
-    required this.name,
-    required this.price,
-    required this.imageUrl,
-    required this.isCanceled,
-  });
-
-  @override
-  Widget build(BuildContext context) {
+  Widget purchaseCard({
+    required BuildContext context,
+    required String name,
+    required String price,
+    required String imageUrl,
+    required String status,
+    required PurchaseType type,
+  }) {
     return Container(
-      margin:  EdgeInsets.only(bottom: 12),
-      padding:  EdgeInsets.all(14),
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: context.colorScheme.surface,
         borderRadius: BorderRadius.circular(14),
@@ -137,12 +141,12 @@ class PurchaseCard extends StatelessWidget {
           BoxShadow(
             color: context.colorScheme.shadow.withOpacity(0.05),
             blurRadius: 8,
-            offset:  Offset(0, 2),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
-
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -174,18 +178,49 @@ class PurchaseCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      name,
-                      style: context.textStyle.titleSmall?.copyWith(
-                        color: context.colorScheme.onSurface,
-
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
+                      decoration: BoxDecoration(
+                        color: context.colorScheme.surfaceContainerHighest,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        status,
+                        style: context.textStyle.labelSmall?.copyWith(
+                          color: context.colorScheme.onSurfaceVariant,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.5,
+                        ),
                       ),
                     ),
                     Spacing.h8,
                     Text(
-                      price,
-                      style: context.textStyle.bodyMedium?.copyWith(
+                      name,
+                      style: context.textStyle.titleSmall?.copyWith(
                         color: context.colorScheme.onSurface,
+                      ),
+                    ),
+                    Spacing.h8,
+                    RichText(
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text: 'Rs. ',
+                            style: context.textStyle.bodySmall?.copyWith(
+                              color: context.colorScheme.onSurface,
+                            ),
+                          ),
+                          TextSpan(
+                            text: price.replaceFirst('Rs.', '').trim(),
+                            style: context.textStyle.titleMedium?.copyWith(
+                              color: context.colorScheme.onSurface,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
@@ -194,25 +229,29 @@ class PurchaseCard extends StatelessWidget {
             ],
           ),
           Spacing.h12,
-          Align(
-            alignment: Alignment.centerRight,
-            child: RoundedButton(
-              backgroundColor: context.colorScheme.primary,
-              foregroundColor: context.colorScheme.surface,
-              radius: 20,
-              enabled: !isCanceled,
-              isLoading: false,
-              onPressed: () {},
-              child: Text(
-                isCanceled ? 'Re-Order' : 'Review',
-                style: context.textStyle.labelLarge?.copyWith(
-                  color: Colors.white,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              RoundedButton(
+                backgroundColor: context.colorScheme.primary,
+                foregroundColor: context.colorScheme.surface,
+                radius: 20,
+                enabled: true,
+                isLoading: false,
+                onPressed: () {},
+                child: Text(
+                  type == PurchaseType.pending ? 'Track' : 'View',
+                  style: context.textStyle.labelLarge?.copyWith(
+                    color: Colors.white,
+                  ),
                 ),
               ),
-            ),
+            ],
           ),
         ],
       ),
     );
   }
 }
+
+enum PurchaseType { completed, pending, canceled }

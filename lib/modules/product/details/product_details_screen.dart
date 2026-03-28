@@ -36,7 +36,7 @@ class ProductDetailsScreen extends GetView<ProductDetailsController> {
                           data.brandName ?? 'GODREJ',
                           style: context.textStyle.bodyMedium?.copyWith(
                             fontWeight: FontWeight.w600,
-                            color: context.colorScheme.onSurfaceVariant
+                            color: context.colorScheme.onSurfaceVariant,
                           ),
                         ),
                         Row(
@@ -79,50 +79,161 @@ class ProductDetailsScreen extends GetView<ProductDetailsController> {
                       ),
                     ),
                   ),
-                  Spacing.h12,
+                  Spacing.h16,
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: _buildIconInfoCard(
+                            context,
+                            icon: Icons.calendar_today_outlined,
+                            label: 'DAILY EMI',
+                            value: '₹ ${data.dailyEMI ?? 0}',
+                          ),
+                        ),
+                    Spacing.w12,
+                        Expanded(
+                          child: _buildIconInfoCard(
+                            context,
+                            icon: Icons.access_time_outlined,
+                            label: 'DURATION',
+                            value: '${data.maxDuration ?? 0} Months',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
 
+              Spacing.h12,
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Container(
-                      padding: const EdgeInsets.all(12),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 14),
                       decoration: BoxDecoration(
-                        color: context.colorScheme.primary.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(12),
+                        color: context.colorScheme.surface,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: context.colorScheme.outlineVariant,
+                        ),
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      child: Row(
                         children: [
-                          Row(
+                          Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade50,
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(color: Colors.grey.shade200),
+                            ),
+                            child: const Icon(
+                              Icons.receipt_long_outlined,
+                              size: 20,
+                              color: Color(0xFF0D2353),
+                            ),
+                          ),
+                          Spacing.w12,
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Icon(
-                                Icons.check_circle,
-                                size: 20,
-                                color: context.colorScheme.primary,
-                              ),
-                              Spacing.w8,
                               Text(
-                                'In Stock',
-                                style: context.textStyle.bodyMedium?.copyWith(
+                            'PROCESSING FEE',
+                                style: context.textStyle.labelSmall?.copyWith(
+                                  color: context.colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                              Spacing.h4,
+                              Text(
+                                '₹ ${data.processingFee ?? 0}',
+                                style: context.textStyle.titleLarge?.copyWith(
                                   fontWeight: FontWeight.w600,
-                                  color: context.colorScheme.primary,
                                 ),
                               ),
                             ],
                           ),
-                          Spacing.h4,
-                          Padding(
-                            padding: const EdgeInsets.only(left: 28),
-                            child: Text(
-                              'Sold by Godrej Retail and Fulfilled by Prime',
-                              style: context.textStyle.bodySmall,
-                            ),
+                          const Spacer(),
+                          Icon(
+                            Icons.info_outline,
+                            color: context.colorScheme.onSurfaceVariant,
                           ),
                         ],
                       ),
                     ),
                   ),
 
-                  Spacing.h24,
+                  Spacing.h12,
+
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 18,
+                      ),
+                      decoration: BoxDecoration(
+                        color: context.colorScheme.surfaceContainer,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'TOTAL PAYABLE AMOUNT',
+                                  style: context.textStyle.labelSmall?.copyWith(
+                                    color: context.colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                                 SizedBox(height: 6),
+                                Row(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.baseline,
+                                  textBaseline: TextBaseline.alphabetic,
+                                  children: [
+                                      Text('₹ ${data.finalAmount ?? 0}',
+                                      style: context.textStyle.headlineSmall
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                    ),
+                                     SizedBox(width: 8),
+                                    Text(
+                                      'INCL. TAXES',
+                                      style: context.textStyle.labelSmall
+                                          ?.copyWith(
+                                            color: context
+                                                .colorScheme
+                                                .onSurfaceVariant,
+                                          ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                          Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: context.colorScheme.surface,
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: context.colorScheme.outlineVariant,
+                              ),
+                            ),
+                            child: Icon(
+                              Icons.verified_outlined,
+                              color: context.colorScheme.primary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ],
               );
             },
@@ -167,8 +278,9 @@ class ProductDetailsScreen extends GetView<ProductDetailsController> {
                         img,
                         fit: BoxFit.contain,
                         width: double.infinity,
-                        errorBuilder: (_, _, _) =>
-                            Image.asset("assets/images/Image_not_available.png"),
+                        errorBuilder: (_, _, _) => Image.asset(
+                          "assets/images/Image_not_available.png",
+                        ),
                       ),
                     ),
                   );
@@ -183,7 +295,7 @@ class ProductDetailsScreen extends GetView<ProductDetailsController> {
                 ),
               ),
 
-          Spacing.h12,
+              Spacing.h12,
 
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -229,6 +341,65 @@ class ProductDetailsScreen extends GetView<ProductDetailsController> {
             );
           }),
         ),
+      ),
+    );
+  }
+
+  Widget _buildIconInfoCard(
+      BuildContext context, {
+        required IconData icon,
+        required String label,
+        required String value,
+      }) {
+
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: context.colorScheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: context.colorScheme.outline.withOpacity(0.2),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              color: context.colorScheme.surfaceVariant,
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: context.colorScheme.outline.withOpacity(0.4),
+              ),
+            ),
+            child: Icon(
+              icon,
+              size: 16,
+              color: context.colorScheme.primary,
+            ),
+          ),
+          const SizedBox(height: 14),
+          Text(
+            label,
+            style: context.textStyle.labelSmall?.copyWith(
+              fontSize: 11,
+              color: context.colorScheme.onSurface.withOpacity(0.6),
+              letterSpacing: 0.4,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            value,
+            style: context.textStyle.titleMedium?.copyWith(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: context.colorScheme.primary,
+            ),
+          ),
+        ],
       ),
     );
   }

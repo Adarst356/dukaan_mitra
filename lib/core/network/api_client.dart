@@ -4,6 +4,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_demo/modules/auth/data/document_type_response.dart';
 import 'package:flutter_demo/modules/dashboard/data/models/brand_response.dart';
+import 'package:flutter_demo/modules/dashboard/data/models/customer_portal_res.dart';
 import 'package:flutter_demo/modules/dashboard/data/models/product_category_res.dart';
 import 'package:flutter_demo/modules/dashboard/data/models/product_response.dart';
 import 'package:flutter_demo/modules/product/data/model/product_detail_model.dart';
@@ -88,6 +89,7 @@ class ApiClient extends GetConnect with Printer {
           (json) => UserProfileModel.fromJson(json as Map<String, dynamic>),
     );
   }
+
   Future<BaseDataRes<List<ProductResponse>>> getProducts({
     int? categoryId,
     int? brandId,
@@ -98,8 +100,8 @@ class ApiClient extends GetConnect with Printer {
     final query = {
       if (categoryId != null) "CategoryId": categoryId.toString(),
       if (brandId != null) "BrandId": brandId.toString(),
-      if (minPrice != null) "MinPrice": minPrice.toString(),
-      if (maxPrice != null) "MaxPrice": maxPrice.toString(),
+      if (minPrice != null) "MinPrice": minPrice.toInt().toString(),
+      if (maxPrice != null) "MaxPrice": maxPrice.toInt().toString(),
       if (search != null && search.isNotEmpty) "Search": search,
     };
     final response = await get('Product', query: query);
@@ -142,6 +144,16 @@ class ApiClient extends GetConnect with Printer {
   Future<BaseRes> purchaseApply(Object body) async {
     final response = await post('purchase/apply', body);
     return ApiResponseHandler.parseBaseRes(response);
+  }
+
+  Future<BaseDataRes<List<CustomerPortalRes>>> getCustomerPortal() async {
+    final response = await get('CustomerPortal/myloans');
+    return ApiResponseHandler.parse<List<CustomerPortalRes>>(
+      response,
+          (json) => (json as List<dynamic>)
+          .map((e) => CustomerPortalRes.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
   }
 
 }

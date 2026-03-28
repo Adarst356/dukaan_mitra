@@ -122,8 +122,9 @@ class FilterScreen extends GetView<FilterController> {
           RangeSlider(
             values: controller.priceRange.value,
             min: 0,
-            max: 999999,
+            max: controller.maxPrice.value,
             onChanged: controller.updatePrice,
+            //  onChanged: controller.updatePrice,
           ),
         ],
       );

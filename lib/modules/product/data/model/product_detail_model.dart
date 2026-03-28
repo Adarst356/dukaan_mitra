@@ -14,6 +14,15 @@ abstract class ProductDetailModel with _$ProductDetailModel {
     @JsonKey(name: 'images') List<Images>? images,
     @JsonKey(name: 'mrp') int? mrp,
     @JsonKey(name: 'isActive') bool? isActive,
+    @JsonKey(name: 'planId') int? planId,
+    @JsonKey(name: 'planName') String? planName,
+    @JsonKey(name: 'interestRate') int? interestRate,
+    @JsonKey(name: 'processingFee') int? processingFee,
+    @JsonKey(name: 'maxDuration') int? maxDuration,
+    @JsonKey(name: 'durationType') String? durationType,
+    @JsonKey(name: 'dailyEMI') double? dailyEMI,
+    @JsonKey(name: 'totalInterest') int? totalInterest,
+    @JsonKey(name: 'finalAmount') int? finalAmount,
   }) = _ProductDetailModel;
 
   factory ProductDetailModel.fromJson(Map<String, Object?> json) => _$ProductDetailModelFromJson(json);

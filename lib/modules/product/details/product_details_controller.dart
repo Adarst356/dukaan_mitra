@@ -34,7 +34,7 @@ class ProductDetailsController extends GetxController{
  }
 
  void purchaseApply() async {
-    repo.loanApply({
+    repo.purchaseApply({
       "productId": productId.value
     }, (state) {
       loanApplyState.value = state;

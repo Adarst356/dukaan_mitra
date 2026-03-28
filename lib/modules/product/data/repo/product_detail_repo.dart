@@ -22,7 +22,7 @@ class ProductDetailsRepo {
       callback(UiState.error(res.message ?? 'Error occurred'));
     }
   }
-  void loanApply(
+  void purchaseApply(
       Object body,
       void Function(UiState<BaseRes> state) callback,
       ) async {

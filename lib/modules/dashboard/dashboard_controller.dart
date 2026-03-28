@@ -4,6 +4,7 @@ import 'package:flutter_demo/modules/dashboard/data/models/product_response.dart
 import 'package:flutter_demo/modules/dashboard/purchase/purchase_history.dart';
 import 'package:get/get.dart';
 import '../../core/network/ui_state.dart';
+import 'data/models/customer_portal_res.dart';
 import 'data/models/product_category_res.dart';
 import 'data/repo/dashboard_repo.dart';
 import 'profile/profile_details_screen.dart';
@@ -20,11 +21,12 @@ class DashboardController extends GetxController{
   final confirmPasswordController = TextEditingController();
   final searchController = TextEditingController();
   final productState = UiState<List<ProductResponse>>.none().obs;
+  final customerPortalState = UiState<List<CustomerPortalRes>>.none().obs;
   final categoryState = UiState<List<ProductCategoryRes>>.none().obs;
 
 
-
   final RxInt currentPage = 0.obs;
+
   final List<String> promoImages = [
     'assets/images/slide_1.jpg',
     'assets/images/slide_2.jpg',
@@ -42,6 +44,8 @@ class DashboardController extends GetxController{
     CommonController.to.fetchProfile();
     fetchProducts();
     fetchCategory();
+    customerPortal();
+
   }
 
   void fetchProducts() {
@@ -89,6 +93,14 @@ class DashboardController extends GetxController{
         search: query,
       );
     }
+  }
+  void customerPortal() {
+    repo.getCustomerPortal((state) {
+      customerPortalState.value = state;
+      state.handleWithErrorBox(
+          showLoader: true, (data) {}
+      );
+    });
   }
 
   @override
