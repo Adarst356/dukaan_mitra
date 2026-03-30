@@ -8,6 +8,7 @@ abstract class ProductCategoryRes with _$ProductCategoryRes {
   const factory ProductCategoryRes({
     @JsonKey(name: 'categoryId') int? categoryId,
     @JsonKey(name: 'categoryName') String? categoryName,
+    @JsonKey(name: 'imagePath') String? imagePath,
     @JsonKey(name: 'isActive') bool? isActive,
   }) = _ProductCategoryRes;
 

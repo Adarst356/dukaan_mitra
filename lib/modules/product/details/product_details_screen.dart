@@ -72,11 +72,25 @@ class ProductDetailsScreen extends GetView<ProductDetailsController> {
 
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Text(
-                      "₹ ${data.mrp ?? 0}",
-                      style: context.textStyle.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
+                    child: Row(
+                      children: [
+                        Text(
+                          "₹ ${data.offerPrice ?? data.mrp ?? 0}",
+                          style: context.textStyle.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+
+                        Spacing.w8,
+                        if (data.offerPrice != null)
+                          Text(
+                            "₹ ${data.mrp ?? 0}",
+                            style: context.textStyle.bodyMedium?.copyWith(
+                              color: Colors.grey,
+                              decoration: TextDecoration.lineThrough,
+                            ),
+                          ),
+                      ],
                     ),
                   ),
                   Spacing.h16,
@@ -92,7 +106,7 @@ class ProductDetailsScreen extends GetView<ProductDetailsController> {
                             value: '₹ ${data.dailyEMI ?? 0}',
                           ),
                         ),
-                    Spacing.w12,
+                        Spacing.w12,
                         Expanded(
                           child: _buildIconInfoCard(
                             context,
@@ -105,12 +119,14 @@ class ProductDetailsScreen extends GetView<ProductDetailsController> {
                     ),
                   ),
 
-              Spacing.h12,
+                  Spacing.h12,
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 14),
+                        horizontal: 16,
+                        vertical: 14,
+                      ),
                       decoration: BoxDecoration(
                         color: context.colorScheme.surface,
                         borderRadius: BorderRadius.circular(16),
@@ -139,7 +155,7 @@ class ProductDetailsScreen extends GetView<ProductDetailsController> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                            'PROCESSING FEE',
+                                'PROCESSING FEE',
                                 style: context.textStyle.labelSmall?.copyWith(
                                   color: context.colorScheme.onSurfaceVariant,
                                 ),
@@ -188,19 +204,20 @@ class ProductDetailsScreen extends GetView<ProductDetailsController> {
                                     color: context.colorScheme.onSurfaceVariant,
                                   ),
                                 ),
-                                 SizedBox(height: 6),
+                                SizedBox(height: 6),
                                 Row(
                                   crossAxisAlignment:
                                       CrossAxisAlignment.baseline,
                                   textBaseline: TextBaseline.alphabetic,
                                   children: [
-                                      Text('₹ ${data.finalAmount ?? 0}',
+                                    Text(
+                                      '₹ ${data.finalAmount ?? 0}',
                                       style: context.textStyle.headlineSmall
                                           ?.copyWith(
                                             fontWeight: FontWeight.w600,
                                           ),
                                     ),
-                                     SizedBox(width: 8),
+                                    SizedBox(width: 8),
                                     Text(
                                       'INCL. TAXES',
                                       style: context.textStyle.labelSmall
@@ -323,44 +340,35 @@ class ProductDetailsScreen extends GetView<ProductDetailsController> {
   }
 
   Widget _buildBottomBar(BuildContext context) {
-    return SafeArea(
-      child: Container(
-        color: context.colorScheme.surface,
-        padding: const EdgeInsets.all(12),
-        child: SizedBox(
-          height: 45,
-          width: double.infinity,
-          child: Obx(() {
-            return RoundedButton(
-              onPressed: controller.purchaseApply,
-              isLoading: controller.loanApplyState.value.isLoading,
-              text: 'Buy Now',
-              radius: 8,
-              backgroundColor: ThemeColors.colorOrange,
-              foregroundColor: Colors.white,
-            );
-          }),
-        ),
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: SafeArea(
+        child: Obx(() {
+          return RoundedButton(
+            onPressed: controller.purchaseApply,
+            isLoading: controller.loanApplyState.value.isLoading,
+            text: 'Buy Now',
+            radius: 10,
+            backgroundColor: ThemeColors.colorOrange,
+            foregroundColor: Colors.white,
+          );
+        }),
       ),
     );
   }
 
   Widget _buildIconInfoCard(
-      BuildContext context, {
-        required IconData icon,
-        required String label,
-        required String value,
-      }) {
-
-
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required String value,
+  }) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: context.colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: context.colorScheme.outline.withOpacity(0.2),
-        ),
+        border: Border.all(color: context.colorScheme.outline.withOpacity(0.2)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -375,11 +383,7 @@ class ProductDetailsScreen extends GetView<ProductDetailsController> {
                 color: context.colorScheme.outline.withOpacity(0.4),
               ),
             ),
-            child: Icon(
-              icon,
-              size: 16,
-              color: context.colorScheme.primary,
-            ),
+            child: Icon(icon, size: 16, color: context.colorScheme.primary),
           ),
           const SizedBox(height: 14),
           Text(

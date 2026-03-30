@@ -37,6 +37,18 @@ class _FloatingNavBarState extends State<FloatingNavBar> {
       decoration: BoxDecoration(
         color: ThemeColors.bottomNavigationColor,
         borderRadius: BorderRadius.circular(32),
+        border: Border.all(
+          color: Colors.white.withOpacity(0.1),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.15),
+            blurRadius: 25,
+            spreadRadius: 1,
+            offset: const Offset(0, 10),
+          ),
+        ],
       ),
       child:  Row(
       mainAxisSize: MainAxisSize.max,

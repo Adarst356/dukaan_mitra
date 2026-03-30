@@ -14,6 +14,18 @@ abstract class ProductResponse with _$ProductResponse {
     @JsonKey(name: 'images') List<Images>? images,
     @JsonKey(name: 'mrp') int? mrp,
     @JsonKey(name: 'isActive') bool? isActive,
+    @JsonKey(name: 'stockQuantity') int? stockQuantity,
+    @JsonKey(name: 'planId') int? planId,
+    @JsonKey(name: 'planName') String? planName,
+    @JsonKey(name: 'interestRate') int? interestRate,
+    @JsonKey(name: 'processingFee') int? processingFee,
+    @JsonKey(name: 'maxDuration') int? maxDuration,
+    @JsonKey(name: 'durationType') String? durationType,
+    @JsonKey(name: 'dailyEMI') double? dailyEMI,
+    @JsonKey(name: 'totalInterest') int? totalInterest,
+    @JsonKey(name: 'finalAmount') int? finalAmount,
+    @JsonKey(name: 'discount') int? discount,
+    @JsonKey(name: 'offerPrice') int? offerPrice,
   }) = _ProductResponse;
 
   factory ProductResponse.fromJson(Map<String, Object?> json) => _$ProductResponseFromJson(json);

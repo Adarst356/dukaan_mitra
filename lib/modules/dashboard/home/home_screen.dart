@@ -84,10 +84,8 @@ class HomeScreen extends GetView<DashboardController> {
                                     final item = data[index];
                                     return circleIconItem(
                                       context,
-                                      icon: Icons.category,
+                                      imagePath: item.imagePath ?? "",
                                       label: item.categoryName ?? "",
-                                      iconColor: Colors.blue,
-                                      onTap: () {},
                                     );
                                   },
                                 );
@@ -325,14 +323,14 @@ class HomeScreen extends GetView<DashboardController> {
   }
 
   Widget circleIconItem(
-    BuildContext context, {
-    required IconData icon,
-    required String label,
-    required Color iconColor,
-    double size = 60,
-    double iconSize = 28,
-    VoidCallback? onTap,
-  }) {
+      BuildContext context, {
+        required String? imagePath,
+        required String label,
+        double size = 60,
+        double iconSize = 28,
+        VoidCallback? onTap,
+      }) {
+
     return GestureDetector(
       onTap: onTap,
       child: Column(
@@ -345,15 +343,36 @@ class HomeScreen extends GetView<DashboardController> {
               color: context.colorScheme.surfaceContainerHighest,
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, color: iconColor, size: iconSize),
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: imagePath != null && imagePath.isNotEmpty
+                  ? Image.network(
+                imagePath,
+                fit: BoxFit.cover,
+                errorBuilder: (_, _, _) {
+                  return Icon(
+                    Icons.category,
+                    size: iconSize,
+                    color: context.colorScheme.onSurfaceVariant,
+                  );
+                },
+              )
+                  : Icon(
+                Icons.category,
+                size: iconSize,
+                color: context.colorScheme.onSurfaceVariant,
+              ),
+            ),
           ),
           Spacing.h8,
-          Text(label, style: context.textStyle.bodySmall),
+          Text(
+            label,
+            style: context.textStyle.bodySmall,
+          ),
         ],
       ),
     );
   }
-
   Widget _buildStaticCard(BuildContext context, ProductResponse item) {
     return InkWell(
       onTap: () {
@@ -427,11 +446,24 @@ class HomeScreen extends GetView<DashboardController> {
                     ],
                   ),
                   Spacing.h8,
-                  Text(
-                    "₹ ${item.mrp ?? 0}",
-                    style: context.textStyle.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
+                  Row(
+                    children: [
+                      Text(
+                        "₹ ${item.offerPrice ?? item.mrp ?? 0}",
+                        style: context.textStyle.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Spacing.w8,
+                      if (item.offerPrice != null)
+                        Text(
+                          "₹ ${item.mrp ?? 0}",
+                          style: context.textStyle.bodySmall?.copyWith(
+                            color: Colors.grey,
+                            decoration: TextDecoration.lineThrough,
+                          ),
+                        ),
+                    ],
                   ),
                   Spacing.h4,
                 ],

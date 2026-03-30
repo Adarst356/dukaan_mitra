@@ -33,26 +33,18 @@ class FilterScreen extends GetView<FilterController> {
         ),
       ),
 
-      body: RefreshIndicator(
-        onRefresh: () async {
-          await Future.wait([
-            CommonController.to.fetchCategory(isRefresh: true),
-            CommonController.to.fetchBrand(isRefresh: true),
-          ]);
-        },
-        child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              categorySection(context),
-              divider(),
-              priceSection(context),
-              divider(),
-              brandSection(context),
-            ],
-          ),
+      body: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            categorySection(context),
+            divider(),
+            priceSection(context),
+            divider(),
+            brandSection(context),
+          ],
         ),
       ),
       bottomNavigationBar: _buildFilterBottomBar(context),

@@ -73,6 +73,7 @@ class CommonController extends GetxController {
       });
     }
   }
+
   Future<void> fetchCategory({bool isRefresh = false}) async {
     if (isRefresh || categoryState.value.isNone || categoryState.value.isError) {
       await repo.getCategory((state) {
