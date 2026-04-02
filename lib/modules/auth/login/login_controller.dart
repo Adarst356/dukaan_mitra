@@ -35,11 +35,17 @@ class LoginController extends GetxController{
 
         isLoading.value = state.isLoading;
         state.handleWithErrorBox(
-            showLoader: false, (data) async {
+            showLoader: true, (data) async {
           TextInput.finishAutofillContext();
           await CommonController.to.setUserData(data);
-          Get.offAllNamed(AppRoutes.dashboard);
-
+          final roleId = data.roleId;
+          if (roleId.isFieldInspector) {
+            Get.offAllNamed(AppRoutes.fieldInspector);
+          } else if (roleId.isDashboardUser) {
+            Get.offAllNamed(AppRoutes.dashboard);
+          } else {
+            Get.offAllNamed(AppRoutes.dashboard);
+          }
         });
       },
     );

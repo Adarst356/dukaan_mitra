@@ -6,11 +6,13 @@ import 'package:flutter_demo/modules/dashboard/data/models/brand_response.dart';
 import 'package:flutter_demo/modules/dashboard/data/models/customer_portal_res.dart';
 import 'package:flutter_demo/modules/dashboard/data/models/product_category_res.dart';
 import 'package:flutter_demo/modules/dashboard/data/models/product_response.dart';
+import 'package:flutter_demo/modules/field_inspector/data/model/fi_dashboard_data.dart';
 import 'package:flutter_demo/modules/product/data/model/product_detail_model.dart';
 import 'package:get/get.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/utils/printer.dart';
 import '../../data/models/user_data.dart';
+import '../../modules/field_inspector/data/model/fi_assignment_model.dart';
 import '../../modules/profile/data/model/user_profile_model.dart';
 import '../../modules/purchase/data/purchase_data_res.dart';
 import '../common_controller.dart';
@@ -165,8 +167,39 @@ class ApiClient extends GetConnect with Printer {
   }
 
   Future<BaseRes> changePassword(Object body) async {
-    final response = await post('Auth/change-password',body);
+    final response = await post('Auth/change-password', body);
     return ApiResponseHandler.parseBaseRes(response);
   }
 
+  Future<BaseDataRes<List<FiAssignmentModel>>> getMyAssignments() async {
+    final response = await get('FieldInspection/myassignments');
+    return ApiResponseHandler.parse<List<FiAssignmentModel>>(
+      response,
+      (json) => (json as List<dynamic>)
+          .map((e) => FiAssignmentModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+  }
+
+  Future<BaseDataRes<FiDashboardData>> getFiDashboard() async {
+    final response = await get('FieldInspection/fi-dashboard');
+    return ApiResponseHandler.parse<FiDashboardData>(
+      response,
+      (json) => FiDashboardData.fromJson(json as Map<String, dynamic>),
+    );
+  }
+
+  Future<BaseRes> submitReport({
+    required int assignmentId,
+    required String remarks,
+    required String imagePath,
+  }) async {
+    final formData = FormData({
+      'AssignmentId': assignmentId,
+      'Remarks': remarks,
+      'Photo': MultipartFile(imagePath, filename: imagePath.split('/').last),
+    });
+    final response = await post('FieldInspection/submitreport', formData);
+    return ApiResponseHandler.parseBaseRes(response);
+  }
 }

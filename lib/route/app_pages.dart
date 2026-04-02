@@ -17,6 +17,8 @@ import '../modules/dashboard/filter/data/filter_repo.dart';
 import '../modules/dashboard/filter/filter_controller.dart';
 import '../modules/dashboard/filter/filter_screen.dart';
 
+import '../modules/field_inspector/fi_dashboard_controller.dart';
+import '../modules/field_inspector/fi_dashboard_screen.dart';
 import '../modules/onboarding/onboarding_screen.dart';
 import '../modules/profile/update/update_profile_controller.dart';
 import '../modules/profile/update/update_profile_screen.dart';
@@ -96,5 +98,22 @@ class AppPages {
         Get.lazyPut(() => DashboardController(/*repo: Get.find()*/));
       }),
     ),
+
+    GetPage(
+      name: AppRoutes.fieldInspector,
+      page: () => FiDashboardScreen(),
+      binding: BindingsBuilder(() {
+       //  Get.lazyPut(() => DashboardRepo());
+        Get.lazyPut(() => FiDashboardController(/*repo: Get.find()*/));
+      }),
+    ),
+/*    GetPage(
+      name: AppRoutes.fieldInspectorStatus,
+      page: () => FiStatusScreen(),
+      binding: BindingsBuilder(() {
+*//*        Get.lazyPut(() => ProductDetailsRepo());*//*
+        Get.lazyPut(() => FiStatusController(*//*repo: Get.find()*//*));
+      }),
+    ),*/
   ];
 }

@@ -1,20 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_demo/core/theme/theme_colors.dart';
-import 'package:flutter_demo/core/utils/extensions.dart';
 import 'package:flutter_demo/core/widgets/floating_nav_bar.dart';
 import 'package:get/get.dart';
-import 'dashboard_controller.dart';
+import 'fi_dashboard_controller.dart';
 
-class DashboardScreen extends GetView<DashboardController> {
-  const DashboardScreen({super.key});
 
+class FiDashboardScreen extends GetView<FiDashboardController> {
+  const FiDashboardScreen({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent, // 👈 add this
+      backgroundColor: Colors.transparent,
       extendBody: true,
       body: Obx(
-        () => IndexedStack(
+            () => IndexedStack(
           index: controller.currentIndex.value,
           children: controller.pages,
         ),
@@ -26,7 +24,6 @@ class DashboardScreen extends GetView<DashboardController> {
             onTap: controller.changeIndex,
             icons: const [
               Icons.home_outlined,
-              Icons.shopping_bag_outlined,
               Icons.person_outline,
             ],
           );

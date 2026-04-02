@@ -8,11 +8,15 @@ import '../theme/theme_colors.dart';
 class FloatingNavBar extends StatefulWidget {
   final int selectedIndex;
   final Function(int) onTap;
+  final List<IconData> icons; // 👈 ADD THIS
+
 
   const FloatingNavBar({
     super.key,
     this.selectedIndex = 0,
     required this.onTap,
+    required this.icons, // 👈 REQUIRED
+
   });
 
   @override

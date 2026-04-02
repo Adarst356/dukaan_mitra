@@ -6,6 +6,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../data/models/geo_location.dart';
 import '../network/ui_state.dart';
@@ -209,6 +210,8 @@ extension StatusColorExtension on String {
 
   bool get isPending => _normalized == 'pending';
   bool get isRejected => _normalized == 'rejected';
+
+
   Color bgColor(ColorScheme colorScheme) {
     if (isSuccess) {
       return ThemeColors.colorGreen.withOpacity(0.1);
@@ -230,7 +233,43 @@ extension StatusColorExtension on String {
   }
 
 }
-extension RoleIdExt on int {
+
+
+extension RoleNavigationExtension on int? {
   bool get isFieldInspector => this == 4;
-  bool get isCustomer => this == 6;
+
+  bool get isDashboardUser => this == 6;
+
+}
+
+
+extension CallExtension on String {
+  Future<void> call() async {
+    final uri = Uri.parse("tel:$this");
+
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+    } else {
+      throw "Cannot make call";
+    }
+  }
+}
+
+extension FiStatusExtension on String? {
+  String get _normalized => (this ?? '').toLowerCase().trim();
+  bool get isAssigned => _normalized == 'assigned';
+  bool get isCompleted => _normalized == 'completed';
+  Color fiBgColor(ColorScheme colorScheme) {
+    if (isCompleted) {
+      return ThemeColors.colorGreen.withOpacity(0.1);
+    } else if (isAssigned) {
+      return ThemeColors.colorRed.withOpacity(0.1);
+    }
+    return colorScheme.surfaceVariant;
+  }
+  Color fiTextColor(ColorScheme colorScheme) {
+    if (isCompleted) return ThemeColors.colorGreen;
+    if (isAssigned) return ThemeColors.colorRed;
+    return colorScheme.onSurfaceVariant;
+  }
 }

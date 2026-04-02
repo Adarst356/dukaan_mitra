@@ -12,5 +12,7 @@ class AppRoutes {
   static const filterScreen = '/FilterScreen';
   static const productDetailsScreen = '/productDetailsScreen';
   static const purchaseDetailsScreen = '/purchaseDetailsScreen';
+  static const fieldInspector = '/fieldInspector';
+  static const fieldInspectorStatus = '/fieldInspectorStatus';
 
 }

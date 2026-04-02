@@ -136,7 +136,6 @@ class LoginScreen extends GetView<LoginController> {
                           backgroundColor: context.colorScheme.primary,
                           foregroundColor: context.colorScheme.surface,
                           text: "Sign In",
-                          isLoading: controller.isLoading.value,
                           width: double.infinity,
                           onPressed: controller.login,
                         ),

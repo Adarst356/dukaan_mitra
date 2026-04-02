@@ -319,7 +319,6 @@ class ProfileDetailsScreen extends GetView<DashboardController> {
                       child: Obx(() {
                         final isLoading =
                             controller.changePasswordState.value.isLoading;
-            
                         return RoundedButton(
                           radius: 10,
                           onPressed: isLoading
