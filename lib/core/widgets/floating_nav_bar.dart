@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_demo/core/utils/extensions.dart';
 
 import '../theme/theme_colors.dart';
 
@@ -37,12 +38,12 @@ class _FloatingNavBarState extends State<FloatingNavBar> {
         color: ThemeColors.bottomNavigationColor,
         borderRadius: BorderRadius.circular(32),
         border: Border.all(
-          color: Colors.white.withOpacity(0.1),
+          color: Colors.white.withOpacityX(0.1),
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.15),
+            color: Colors.black.withOpacityX(0.15),
             blurRadius: 25,
             spreadRadius: 1,
             offset: const Offset(0, 10),

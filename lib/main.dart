@@ -24,15 +24,6 @@ class MyApp extends StatelessWidget {
     final brightness = View.of(context).platformDispatcher.platformBrightness;
     CommonController.to.loadLoginUserData();
     final roleId = CommonController.to.userData.value?.roleId;
-    String initialRoute = AppRoutes.onboarding;
- /*   if (roleId.isFieldInspector) {
-      initialRoute = (AppRoutes.fieldInspector);
-    } else if (roleId.isDashboardUser) {
-      initialRoute = (AppRoutes.dashboard);
-    }*/
-    if (roleId.isFieldInspector || roleId.isDashboardUser) {
-      initialRoute = AppRoutes.dashboard;
-    }
     TextTheme textTheme = createTextTheme(context, "ABeeZee", "Agbalumo");
     MaterialTheme theme = MaterialTheme(textTheme);
     return GetMaterialApp(
@@ -40,7 +31,7 @@ class MyApp extends StatelessWidget {
       theme: brightness == Brightness.light ? theme.light() : theme.dark(),
       debugShowCheckedModeBanner: false,
       getPages: AppPages.pages,
-      initialRoute: initialRoute,
+      initialRoute: roleId!=null ? AppRoutes.dashboard : AppRoutes.onboarding ,
     );
   }
 }
