@@ -47,9 +47,6 @@ class DashboardController extends GetxController {
   void onReady() {
     super.onReady();
     CommonController.to.fetchProfile();
-    fetchProducts();
-    fetchCategory();
-    customerPortal();
     if (roleId.isFieldInspector) {
       fetchAssignments();
       fetchFiDashboard();
@@ -101,8 +98,6 @@ class DashboardController extends GetxController {
     });
   }
 
-
-
   void submitReport(int assignmentId) async {
     print(">>> Submitting with assignmentId: $assignmentId"); // ADD THIS
     final remarks = remarksController.text.trim();
@@ -136,6 +131,7 @@ class DashboardController extends GetxController {
       selectedImagePath.value = picked.path;
     }
   }
+
   void fetchAssignments() {
     repo.getMyAssignments((state) {
       assignmentState.value = state;
@@ -147,4 +143,5 @@ class DashboardController extends GetxController {
       fiDashboardState.value = state;
     });
   }
+
 }

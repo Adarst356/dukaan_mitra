@@ -74,6 +74,7 @@ class DashboardRepo {
       callback(UiState.error(res.message ?? 'Error occurred'));
     }
   }
+
   Future<void> getMyAssignments(
       void Function(UiState<List<FiAssignmentModel>>) callback,
       ) async {
@@ -107,6 +108,7 @@ class DashboardRepo {
       callback(UiState.error(res.message ?? 'Error occurred'));
     }
   }
+
   Future<void> submitReport({
     required int assignmentId,
     required String remarks,
@@ -130,6 +132,23 @@ class DashboardRepo {
       callback(UiState.success(res));
     } else {
       callback(UiState.error(res.message ?? 'Error occurred'));
+    }
+  }
+  void logout(
+      Object body,
+      void Function(UiState<BaseRes> state) callback,
+      ) async {
+    callback.call(const UiState.loading());
+    if (!await isNetworkAvailable()) {
+      callback.call(const UiState.error('No internet connection'));
+      return;
+    }
+    var res = await ApiClient.to.logout();
+
+    if (res.success == true) {
+      callback.call(UiState.success(res));
+    } else {
+      callback.call(UiState.error(res.message ?? 'Error occurred'));
     }
   }
 }

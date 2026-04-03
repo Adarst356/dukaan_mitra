@@ -25,10 +25,8 @@ class DashboardScreen extends GetView<DashboardController> {
             if (CommonController.to.userData.value?.roleId.isFieldInspector == true)
             FiStatusScreen()
             else HomeScreen() ,
-
             if (CommonController.to.userData.value?.roleId.isDashboardUser == true)
               PurchaseHistory(),
-
             ProfileDetailsScreen(),
           ],
         ),

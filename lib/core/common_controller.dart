@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 import '../data/models/user_data.dart';
 import '../data/repositories/common_repo.dart';
 import '../modules/dashboard/data/models/brand_response.dart';
+import '../modules/dashboard/data/models/fi_profile_data.dart';
 import '../modules/dashboard/data/models/product_category_res.dart';
 import '../modules/profile/data/model/user_profile_model.dart';
 import '../route/app_routes.dart';
@@ -20,6 +21,7 @@ class CommonController extends GetxController {
   final repo = CommonRepo();
   final Rx<UserData?> userData = Rx<UserData?>(null);
   final profileState = UiState<UserProfileModel>.none().obs;
+  final fiProfileState = UiState<FiProfileData>.none().obs;
   final categoryState = UiState<List<ProductCategoryRes>>.none().obs;
   final brandState = UiState<List<BrandResponse>>.none().obs;
   final loggedIn = false.obs;
@@ -27,10 +29,19 @@ class CommonController extends GetxController {
 
 
 
+/*
   @override
   void onInit() {
     super.onInit();
     loadLoginUserData();
+    fetchProfile();
+  }
+*/
+ @override
+  void onReady() {
+    super.onReady();
+    loadLoginUserData();
+    fetchProfile();
   }
 
 
@@ -70,9 +81,16 @@ class CommonController extends GetxController {
 
   Future<void> fetchProfile({bool isRefresh = false}) async {
     if (isRefresh || profileState.value.isError || profileState.value.isNone) {
-      await repo.getUserProfile((state) {
-        profileState.value = state;
-      });
+      final roleId = userData.value?.roleId;
+      if (roleId.isFieldInspector) {
+        await repo.getFiProfile((state) {
+          fiProfileState.value = state;
+        });
+      } else {
+        await repo.getUserProfile((state) {
+          profileState.value = state;
+        });
+      }
     }
   }
 

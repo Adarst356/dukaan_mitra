@@ -6,7 +6,6 @@ import 'package:flutter_demo/modules/product/details/product_details_screen.dart
 import 'package:flutter_demo/modules/profile/data/repo/profile_repo.dart';
 import 'package:flutter_demo/modules/purchase/details/purchase_controller.dart';
 import 'package:get/get.dart';
-
 import '../modules/auth/data/auth_repo.dart';
 import '../modules/auth/login/login_controller.dart';
 import '../modules/auth/login/login_screen.dart';
@@ -16,9 +15,6 @@ import '../modules/dashboard/dashboard_screen.dart';
 import '../modules/dashboard/filter/data/filter_repo.dart';
 import '../modules/dashboard/filter/filter_controller.dart';
 import '../modules/dashboard/filter/filter_screen.dart';
-
-import '../modules/field_inspector/fi_dashboard_controller.dart';
-import '../modules/field_inspector/fi_dashboard_screen.dart';
 import '../modules/onboarding/onboarding_screen.dart';
 import '../modules/profile/update/update_profile_controller.dart';
 import '../modules/profile/update/update_profile_screen.dart';

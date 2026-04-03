@@ -8,7 +8,6 @@ import 'package:flutter_demo/core/widgets/loader.dart';
 import 'package:flutter_demo/modules/dashboard/dashboard_controller.dart';
 import 'package:flutter_demo/route/app_routes.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 import '../../../core/common_controller.dart';
 import '../../../core/theme/theme_colors.dart';
 import '../../../core/widgets/custom_dialog.dart';
@@ -44,6 +43,7 @@ class ProfileDetailsScreen extends StatelessWidget {
   }
 
   Widget _buildProfileCard(BuildContext context) {
+    final isFI = CommonController.to.userData.value?.roleId.isFieldInspector == true;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
@@ -55,56 +55,106 @@ class ProfileDetailsScreen extends StatelessWidget {
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-       Obx((){
-         return CommonController.to.profileState.value.when(
-           success: (data){
-             return Column(
-               children: [
-                 Center(
-                   child: CircleAvatar(
-                     radius: 36,
-                     backgroundColor: context.colorScheme.surfaceContainerHighest,
-                     child: Icon(
-                       Icons.person,
-                       size: 36,
-                       color: context.colorScheme.onSurfaceVariant,
-                     ),
-                   ),
-                 ),
-                 Spacing.h8,
-                 Text(data.fullName??"", style: context.textStyle.titleMedium),
-                 Text(data.email??"", style: context.textStyle.bodySmall),
-                 Text(data.mobileNumber??"", style: context.textStyle.bodySmall),
-               ],
-             );
-           },
-           error: (error)=>ErrorTextWidget(msg: error),
-           loading: ()=>Loader(),
-           none: ()=>SizedBox()
-       );
-       }),
-          Positioned(
-            top: 0,
-            right: 0,
-            child: InkWell(
-              borderRadius: BorderRadius.circular(20),
-              onTap: () {
-                Get.toNamed(AppRoutes.updateProfile);
-              },
-              child: Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: context.colorScheme.surfaceContainer,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.edit,
-                  size: 20,
-                  color: context.colorScheme.onSurface,
+          Obx(() {
+            if (isFI) {
+              return CommonController.to.fiProfileState.value.when(
+                success: (data) {
+                  return Column(
+                    children: [
+                      Center(
+                        child: CircleAvatar(
+                          radius: 36,
+                          backgroundColor:
+                              context.colorScheme.surfaceContainerHighest,
+                          child: Icon(
+                            Icons.person,
+                            size: 36,
+                            color: context.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ),
+                      Spacing.h8,
+                      Text(
+                        data.fullName ?? "",
+                        style: context.textStyle.titleMedium,
+                      ),
+                      Text(
+                        data.email ?? "",
+                        style: context.textStyle.bodySmall,
+                      ),
+                      Text(
+                        data.mobileNumber ?? "",
+                        style: context.textStyle.bodySmall,
+                      ),
+                    ],
+                  );
+                },
+                error: (error) => ErrorTextWidget(msg: error),
+                loading: () => Loader(),
+                none: () => const SizedBox(),
+              );
+            } else {
+              return CommonController.to.profileState.value.when(
+                success: (data) {
+                  return Column(
+                    children: [
+                      Center(
+                        child: CircleAvatar(
+                          radius: 36,
+                          backgroundColor:
+                              context.colorScheme.surfaceContainerHighest,
+                          child: Icon(
+                            Icons.person,
+                            size: 36,
+                            color: context.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ),
+                      Spacing.h8,
+                      Text(
+                        data.fullName ?? "",
+                        style: context.textStyle.titleMedium,
+                      ),
+                      Text(
+                        data.email ?? "",
+                        style: context.textStyle.bodySmall,
+                      ),
+                      Text(
+                        data.mobileNumber ?? "",
+                        style: context.textStyle.bodySmall,
+                      ),
+                    ],
+                  );
+                },
+                error: (error) => ErrorTextWidget(msg: error),
+                loading: () => Loader(),
+                none: () => const SizedBox(),
+              );
+            }
+          }),
+
+          if (CommonController.to.userData.value?.roleId.isDashboardUser ==
+              true)
+            Positioned(
+              top: 0,
+              right: 0,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(20),
+                onTap: () => Get.toNamed(AppRoutes.updateProfile),
+                child: Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: context.colorScheme.surfaceContainer,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.edit,
+                    size: 20,
+                    color: context.colorScheme.onSurface,
+                  ),
                 ),
               ),
             ),
-          ),
         ],
       ),
     );
@@ -119,18 +169,18 @@ class ProfileDetailsScreen extends StatelessWidget {
       ),
       child: Column(
         children: [
-          _menuTile(
-            context,
-            icon: Icons.person_outline,
-            iconBg: ThemeColors.colorGreen.withOpacity(0.1),
-            iconColor: ThemeColors.colorGreen,
-            title: 'Update Profile',
-            onTap: () {
-              Get.toNamed(AppRoutes.updateProfile);
-            },
-          ),
-
-          _divider(context),
+          if (CommonController.to.userData.value?.roleId.isDashboardUser ==
+              true) ...[
+            _menuTile(
+              context,
+              icon: Icons.person_outline,
+              iconBg: ThemeColors.colorGreen.withOpacity(0.1),
+              iconColor: ThemeColors.colorGreen,
+              title: 'Update Profile',
+              onTap: () => Get.toNamed(AppRoutes.updateProfile),
+            ),
+            _divider(context),
+          ],
 
           _menuTile(
             context,
@@ -138,12 +188,10 @@ class ProfileDetailsScreen extends StatelessWidget {
             iconBg: ThemeColors.colorGold.withOpacity(0.1),
             iconColor: ThemeColors.colorGold,
             title: 'Change Password',
-            onTap: () {
-              showDialog(
-                context: context,
-                builder: (_) => passwordDialog(context),
-              );
-            },
+            onTap: () => showDialog(
+              context: context,
+              builder: (_) => passwordDialog(context),
+            ),
           ),
           _divider(context),
 
@@ -154,6 +202,7 @@ class ProfileDetailsScreen extends StatelessWidget {
             iconColor: ThemeColors.colorRed,
             title: 'Logout',
             titleColor: ThemeColors.colorRed,
+            isLast: true,
             onTap: () {
               showDialog(
                 context: context,
@@ -166,13 +215,10 @@ class ProfileDetailsScreen extends StatelessWidget {
                     CommonController.to.logout();
                     Get.back();
                   },
-                  onCancelPressed: () {
-                    Get.back();
-                  },
+                  onCancelPressed: () => Get.back(),
                 ),
               );
             },
-            isLast: true,
           ),
         ],
       ),
@@ -229,13 +275,16 @@ class ProfileDetailsScreen extends StatelessWidget {
           ),
         ),
       ),
-    );}
+    );
+  }
+
   Widget _divider(BuildContext context) => Divider(
     height: 1,
     indent: 10,
     endIndent: 10,
     color: context.colorScheme.outlineVariant,
   );
+
   Widget passwordDialog(BuildContext context) {
     final formKey = GlobalKey<FormState>();
     final oldPasswordController = TextEditingController();
@@ -254,7 +303,7 @@ class ProfileDetailsScreen extends StatelessWidget {
               children: [
                 Text('Change password', style: context.textStyle.titleSmall),
                 Spacing.h16,
-            
+
                 /// OLD PASSWORD
                 PassWordTextFormFieldWithLabel(
                   controller: oldPasswordController,
@@ -267,9 +316,9 @@ class ProfileDetailsScreen extends StatelessWidget {
                     return null;
                   },
                 ),
-            
+
                 Spacing.h8,
-            
+
                 /// NEW PASSWORD
                 PassWordTextFormFieldWithLabel(
                   controller: newPasswordController,
@@ -282,9 +331,9 @@ class ProfileDetailsScreen extends StatelessWidget {
                     return null;
                   },
                 ),
-            
+
                 Spacing.h8,
-            
+
                 /// CONFIRM PASSWORD
                 PassWordTextFormFieldWithLabel(
                   controller: confirmPasswordController,
@@ -300,9 +349,9 @@ class ProfileDetailsScreen extends StatelessWidget {
                     return null;
                   },
                 ),
-            
+
                 Spacing.h16,
-            
+
                 Row(
                   children: [
                     Expanded(
@@ -311,26 +360,32 @@ class ProfileDetailsScreen extends StatelessWidget {
                         onPressed: () => Get.back(),
                         text: "Cancel",
                         backgroundColor:
-                        context.colorScheme.surfaceContainerHighest,
+                            context.colorScheme.surfaceContainerHighest,
                         foregroundColor: context.colorScheme.onSurface,
                       ),
                     ),
                     Spacing.w8,
-            
+
                     /// DONE BUTTON
                     Expanded(
                       child: Obx(() {
-                        final isLoading =
-                            CommonController.to.changePasswordState.value.isLoading;
+                        final isLoading = CommonController
+                            .to
+                            .changePasswordState
+                            .value
+                            .isLoading;
                         return RoundedButton(
                           radius: 10,
                           onPressed: isLoading
                               ? null
                               : () {
-                            if (formKey.currentState!.validate()) {
-                              CommonController.to.changePassword(oldPasswordController.text,newPasswordController.text);
-                            }
-                          },
+                                  if (formKey.currentState!.validate()) {
+                                    CommonController.to.changePassword(
+                                      oldPasswordController.text,
+                                      newPasswordController.text,
+                                    );
+                                  }
+                                },
                           text: isLoading ? "Please wait..." : "Done",
                           backgroundColor: context.colorScheme.primary,
                           foregroundColor: context.colorScheme.onPrimary,

@@ -7,7 +7,6 @@ import 'package:flutter_demo/core/widgets/error_text_widget.dart';
 import 'package:flutter_demo/core/widgets/loader.dart';
 import 'package:flutter_demo/core/widgets/rounded_button.dart';
 import 'package:flutter_demo/modules/dashboard/dashboard_controller.dart';
-import 'package:flutter_demo/modules/field_inspector/fi_dashboard_controller.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../../../core/utils/extensions.dart';

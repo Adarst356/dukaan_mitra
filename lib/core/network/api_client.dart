@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_demo/modules/auth/data/document_type_response.dart';
 import 'package:flutter_demo/modules/dashboard/data/models/brand_response.dart';
 import 'package:flutter_demo/modules/dashboard/data/models/customer_portal_res.dart';
+import 'package:flutter_demo/modules/dashboard/data/models/fi_profile_data.dart';
 import 'package:flutter_demo/modules/dashboard/data/models/product_category_res.dart';
 import 'package:flutter_demo/modules/dashboard/data/models/product_response.dart';
 import 'package:flutter_demo/modules/field_inspector/data/model/fi_dashboard_data.dart';
@@ -203,11 +204,11 @@ class ApiClient extends GetConnect with Printer {
     return ApiResponseHandler.parseBaseRes(response);
   }
 
-  Future<BaseDataRes<UserProfileModel>> getFiProfile() async {
+  Future<BaseDataRes<FiProfileData>> getFiProfile() async {
     final response = await get('Dashboard/profile');
-    return ApiResponseHandler.parse<UserProfileModel>(
+    return ApiResponseHandler.parse<FiProfileData>(
       response,
-          (json) => UserProfileModel.fromJson(json as Map<String, dynamic>),
+          (json) => FiProfileData.fromJson(json as Map<String, dynamic>),
     );
   }
 }
