@@ -130,15 +130,13 @@ class LoginScreen extends GetView<LoginController> {
                     top: false,
                     child: Padding(
                       padding: const EdgeInsets.all(12.0),
-                      child: Obx(
-                        () => RoundedButton(
-                          radius: 10,
-                          backgroundColor: context.colorScheme.primary,
-                          foregroundColor: context.colorScheme.surface,
-                          text: "Sign In",
-                          width: double.infinity,
-                          onPressed: controller.login,
-                        ),
+                      child: RoundedButton(
+                        radius: 10,
+                        backgroundColor: context.colorScheme.primary,
+                        foregroundColor: context.colorScheme.surface,
+                        text: "Sign In",
+                        width: double.infinity,
+                        onPressed: controller.login,
                       ),
                     ),
                   ),
